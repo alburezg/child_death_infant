@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+# Folders with large datasets
+Data/derived/*.csv
+Data/derived/*.RDS
+# For presentation
+presentation/
+#other materials, including full functions
+others/
+#experimental
+R/E_Experimental
