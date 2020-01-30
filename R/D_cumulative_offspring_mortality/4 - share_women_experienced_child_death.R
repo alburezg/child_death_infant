@@ -101,7 +101,8 @@ cd_table <-
   cd_mothers %>% 
   group_by(cohort, country) %>% 
   mutate(
-    # Create lx with radix 1
+    # Create lx with radix 1 for year 15
+    # Note: sould this be 
     lx_scaled = lx / first(lx)
     # This pertains to women who have lost one child or more
     # Note that the estimate is weighted by the share of women 
@@ -113,7 +114,6 @@ cd_table <-
     , bereaved_mothers =  bereaved_women * share_of_women_are_mothers
   ) %>% 
   ungroup
-  
 
 # 3. Cohort to Period ----
 
@@ -128,7 +128,6 @@ cd_p <-
   filter(year %in% years) %>% 
   filter(between(age, min(breaks), max(breaks))) %>% 
   arrange(country, year, age) 
-
 
 # 3. Average CD per age gr ----
 
@@ -166,10 +165,23 @@ small <-
   filter(agegr %in% c("[45,50)")) %>% 
   select(-id, - agegr)
 
-View(small)
+# View(small)
 
 write.csv(small, "../../Output/share_mothers_experienced_child_death.csv", row.names = F)
 
 # 4. Export df ----
 
 write.csv(cm, "../../Output/cumulative_child_death.csv", row.names = F)
+
+# 5. Plot ----
+
+cons <- c("mali", "niger", "cameroon", "zimbabwe", "sweden", "guatemala")
+
+cm %>% 
+  filter(country %in% cons) %>% 
+  reshape2::melt(id = c("country", "year", "agegr")) %>% 
+  # pivot_longer(cols = matches(c("country", "year", "agegr")), names_to = "variable", values_to = "value") %>% 
+  ggplot(aes(x = year, y = value, colour = variable, linetype = agegr)) +
+  geom_line() +
+  facet_wrap(~country, scales = "fixed") +
+  theme_bw()

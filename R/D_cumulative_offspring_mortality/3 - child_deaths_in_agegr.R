@@ -48,7 +48,8 @@ height <- 14
 # Creates fertility tables assuming that
 # ASFR is the hazard rate or nqx column
 
-share_of_women_are_mothers <- ASFRC %>% 
+share_of_women_are_mothers <- 
+  ASFRC %>% 
   filter(between(Cohort, 1950, 2000)) %>% 
   mutate(asfr = ASFR/1000) %>% 
   select(cohort = Cohort, country, age = Age, asfr) %>% 
