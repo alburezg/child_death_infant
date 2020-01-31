@@ -102,6 +102,115 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
   
 }
 
+
+
+# Takes survey estimates from Emily and estimates from our models
+# and produces a dataframe where both are shown side-by-side. 
+# THis can later be used for plotting.
+compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), model_df, surv_df) {
+  
+  # 1. Format country names data 
+  
+  surv_df$survey <- surv_df[ , match(surv_measure_keep, names(surv_df))]
+  surv_df[surv_df == ""] <- NA
+  
+  
+  model_df <- 
+    model_df  %>% 
+    filter(agegr %in% model_agegr_keep) %>% 
+    select(iso, year, model = bereaved_mothers)
+  
+  # 2. Merge single-year estimates 
+  
+  joint_single <- merge(
+    surv_df %>% 
+      filter(!is.na(year)) %>% 
+      filter(!grepl("-", year)) %>% 
+      select(iso, region, year, source, survey)
+    , model_df
+    , by = c("iso", "year")
+  ) %>% 
+    mutate(year = as.numeric(year))
+  
+  # 3. Get values for NA 
+  
+  surv_na <- surv_df %>% 
+    filter(is.na(year)) %>% 
+    filter(is.na(survey)) %>% 
+    mutate(
+      year = year_for_missing_countries
+    ) %>% 
+    select(iso, year, region, source, survey)
+  
+  # Merge
+  
+  joint_na <- merge(
+    surv_na 
+    , model_df
+    , by = c("iso", "year")
+  )
+  
+  # 4. Get averages for compund years 
+  
+  # Determine which estimates in the survey data are not for
+  # single years but for year intervals
+  
+  surv_int <- 
+    surv_df %>% 
+    filter(grepl("-", year)) %>% 
+    mutate(
+      year_low = as.numeric(gsub("-[0-9]{2}$", "", year))
+      , year_high = as.numeric(paste0(20, gsub("^[0-9]{4}-", "", year)))
+    ) %>% 
+    arrange(iso, year)
+  
+  ids <- 
+    surv_int %>% 
+    select(iso, year_low, year_high) %>% 
+    reshape2::melt(id = "iso") %>% 
+    arrange(iso) %>% 
+    mutate(id = paste0(iso, value)) %>% 
+    pull(id)
+  
+  model_df_int_means <- 
+    model_df %>% 
+    mutate(id = paste0(iso, year)) %>% 
+    filter(id %in% ids) %>% 
+    select(-id) %>% 
+    # get interval mean
+    group_by(iso) %>% 
+    summarise(model = mean(model)) %>% 
+    ungroup %>% 
+    arrange(iso) %>% 
+    mutate(
+      year = surv_int$year
+    )
+  
+  # Merge
+  
+  joint_int <- merge(
+    surv_int %>% select(iso, year, region, source, survey)
+    , model_df_int_means
+    , by = c("iso", "year")
+  ) %>% 
+    mutate(
+      year_real = year
+      , year = surv_int$year_low
+    )
+  
+  # 5. Plot
+  
+  joint_survey_model <- bind_rows(
+    joint_single, joint_na, joint_int
+  ) %>% 
+    arrange(iso, year)
+  
+  return(joint_survey_model)
+  
+}
+
+
+
 expand_asfr_age <- function(l_5_5, grouped_ages, method = "linear", col = "value") {
   
   all_ages <- min(grouped_ages):max(grouped_ages)
@@ -627,6 +736,68 @@ format_table <- function(df, row_keep = 29, ages = c(20,45,100), cohorts = c(195
   
 }
 
+
+# Creates list with two df of the first difference
+# of child death (country- and regional level)
+get_difference <- function(child_death_df, name_to_save = NA){
+  
+  # Get differences by group for all countries and regions
+  
+  val_list <- split(
+    child_death_df 
+    , list(child_death_df$country, child_death_df$cohort)
+  )
+  
+  names(val_list) <- paste0(names(val_list), ".")
+  
+  # Add NA to the start of each series since I am not considering the prvious age (eg 24)
+  # when getting the differences
+  diff_l <- lapply(val_list, function(df) {
+    df$diff <- c(diff(df$value, differences = 1), NA)
+    df$value <- NULL
+    df
+  }) 
+  
+  df_cl_diff <- 
+    rbindlist(diff_l, use.names = T) %>% 
+    filter(type == "country") %>% 
+    mutate(cohort = as.numeric(cohort)) %>% 
+    arrange(country, cohort, age) 
+  
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # A. Using individual countries ~~~~ 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  # 1. Stat summary by group
+  
+  quant_low <- 0.40
+  quant_high <- 0.60
+  
+  # Data.table alternative is preffered
+  
+  # Get summary measures
+  sum_diff <- data.table(df_cl_diff)[ , list(median = median(diff, na.rm = T), low_iqr = quantile(diff, quant_low, na.rm = T), high_iqr = quantile(diff, quant_high, na.rm = T)), by = list(region, age, cohort)]
+  
+  sum_diff <- 
+    sum_diff %>% 
+    mutate(cohort2 = paste0("Women born in", cohort)) %>% 
+    arrange(region, cohort, age) 
+  
+  if(!is.na(name_to_save)) {
+    paste("Saving to disk...")
+    
+    saveRDS(sum_diff, file = paste0("../../Data/estimates/sum_diff_",name_to_save,".RDS"))
+    saveRDS(df_cl_diff, file = paste0("../../Data/estimates/df_cl_diff_",name_to_save,".RDS"))
+  }
+  
+  
+  out <- list(df_cl_diff, sum_diff)
+  names(out) <- c("df_cl_diff", "sum_diff")
+  
+  return(out)
+  
+}
+
 get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../Data/derived"){
   print(country_keep)
   
@@ -990,6 +1161,65 @@ LT_period_to_cohort <- function(df, years, ages, parallel = F, numCores = 4) {
   
   return(out_df)
 }
+
+# TO compare model and emily suirvey estimates
+plot_comparison <- function(df, base_size = 15, point_size = 4, export = T) {
+  
+  leg <- data.frame(
+    x = c(500, 500)
+    , y = c(1,1.25)
+    , label = c("Model", "Survey")
+    , region = "North America"
+  )
+  
+  po <- data.frame(
+    x = 435
+    , y = c(1,1.25)
+    # , shape = c(17, 16)
+    , shape = c("triangle", "circle")
+    , region = "North America"
+  )
+  
+  p <- 
+    df %>% 
+    mutate(colour = ifelse(is.na(survey), "1", "2")) %>% 
+    # filter(!is.na(survey)) %>% 
+    filter(!is.na(iso)) %>%
+    filter(!region %in% reg_exclude) %>% 
+    select(-year_real) %>% 
+    ggplot(aes(y = iso)) +
+    geom_segment(aes(x = `survey`, xend = `model`, yend = iso)) +
+    # Survey = circle
+    geom_point(aes(x = `survey`), shape = 16, size = point_size) +
+    # Model = triangle
+    geom_point(aes(x = `model`, colour = colour), shape = 17, size = point_size) +
+    facet_wrap(~region, scales = "free_y") +
+    scale_x_continuous("mOM 40-49") +
+    # Legend by hand
+    geom_text(aes(x = x, y = y, label = label), size = 4, data = leg) +
+    # annotate("text", x = 40 + x_adj, y = 7.9 + y_adj, label = "Birth cohort of women",
+    #          , hjust = .5, color = "grey20") +
+    geom_point(aes(x = x, y = y, shape = shape), size = point_size, data = po) +
+    scale_shape_discrete(guide = F) +
+    scale_colour_manual("", breaks = c("1", "2"), values = c("red", "black"), guide = F) +
+    theme_bw(base_size = base_size) 
+  
+  if(export) {
+    
+    nam <- unique(df$level)
+      
+    ggsave(
+      paste0("../../Output/",nam,"_comparative.pdf")
+      , p
+      , width = 18
+      , height = 14
+    )
+    print(paste(nam, "saved!"))
+  }
+    
+  return(p)
+}
+
 
 survival_probs_over_age <- function(max_child_age, lx_indices, co, ma, lt_df) {
   
