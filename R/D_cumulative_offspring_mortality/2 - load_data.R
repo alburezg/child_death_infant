@@ -3,10 +3,10 @@
 
 # Measures with year-age-country level
 
-s1 <- read.csv("../../Data/datasetS1.csv", stringsAsFactors = F)
+# s1 <- read.csv("../../Data/datasetS1.csv", stringsAsFactors = F)
 
 # Measures with year-country level
-s2 <- read.csv("../../Data/datasetS1.csv", stringsAsFactors = F)
+# s2 <- read.csv("../../Data/datasetS1.csv", stringsAsFactors = F)
 
 abs_df <- readRDS("../../Data/estimates/abs_df.RDS")
 
@@ -20,3 +20,4 @@ ASFRC <- read.csv(file = paste0("../../Data/derived/","ASFRC.csv"), stringsAsFac
 # Survey estimates
 
 surv <- read.csv("../../Data/emily/mOM_20200130.csv", stringsAsFactors = F)
+

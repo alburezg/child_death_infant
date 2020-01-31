@@ -135,7 +135,7 @@ cd_p <-
 # have lost X number of children throughout their life. 
 # Or on average, each woman has lost X/100 children.
 
-cm <- 
+mOM <- 
   cd_p %>% 
   mutate( agegr = cut(age, breaks, right = F)  ) %>% 
   filter(!is.na(agegr)) %>% 
@@ -158,7 +158,7 @@ keep <- paste0(
 )
 
 small <- 
-  cm %>% 
+  mOM %>% 
   mutate(id = paste0(country, year)) %>% 
   mutate_if(is.numeric, round, 3) %>% 
   filter(id %in% keep) %>% 
@@ -171,13 +171,13 @@ write.csv(small, "../../Output/share_mothers_experienced_child_death.csv", row.n
 
 # 4. Export df ----
 
-write.csv(cm, "../../Output/cumulative_child_death.csv", row.names = F)
+write.csv(mOM, "../../Output/cumulative_child_death.csv", row.names = F)
 
 # 5. Plot ----
 
 cons <- c("mali", "niger", "cameroon", "zimbabwe", "sweden", "guatemala")
 
-cm %>% 
+mOM %>% 
   filter(country %in% cons) %>% 
   reshape2::melt(id = c("country", "year", "agegr")) %>% 
   # pivot_longer(cols = matches(c("country", "year", "agegr")), names_to = "variable", values_to = "value") %>% 
