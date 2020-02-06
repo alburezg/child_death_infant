@@ -170,7 +170,11 @@ prevalence <- bind_rows(
 ) %>% 
   mutate(level = paste0(measure, "_", ages))
 
-# 5. Plot ----
+# 5. Export ----
+
+write.csv(prevalence %>% select(-level), "../../Output/all_combined.csv", row.names = F)
+
+# 6. Plot ----
 
 prev_list <- split(prevalence, prevalence$level)
 

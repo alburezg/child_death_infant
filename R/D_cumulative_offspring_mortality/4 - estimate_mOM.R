@@ -158,29 +158,10 @@ mOM <-
     , bereaved_mothers = mean(bereaved_mothers, n = floor(n()/2))
   ) %>% 
   ungroup 
-  
-# 4.1. Export small ----
-
-keep <- paste0(
-  c("mali", "niger", "cameroon", "zimbabwe")
-  , c(2012, 2012, 2011, 2015)
-)
-
-small <- 
-  mOM %>% 
-  mutate(id = paste0(country, year)) %>% 
-  mutate_if(is.numeric, round, 3) %>% 
-  filter(id %in% keep) %>% 
-  filter(agegr %in% c("[45,50)")) %>% 
-  select(-id, - agegr)
-
-# View(small)
-
-write.csv(small, "../../Output/share_mothers_experienced_child_death.csv", row.names = F)
 
 # 4. Export df ----
 
-write.csv(mOM, "../../Output/cumulative_child_death.csv", row.names = F)
+write.csv(mOM, "../../Output/mOM.csv", row.names = F)
 
 # 5. Plot ----
 
