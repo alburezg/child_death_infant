@@ -580,7 +580,8 @@ expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_
   for (co in cos){
     # print(co)
     for (ma in mas){
-      # if(ma == 49) browser()
+      # print(ma)
+      # if(ma == 50) browser()
       fert.vec <- c()
       # Cohort ASFR up to a given age
       fert.vec <- ASFRSC[ASFRSC$Cohort == co & ASFRSC$Age <= ma, "ASFR"]
@@ -805,6 +806,137 @@ get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../
   lx.kids.arr <- readRDS(file)  
   lx_array_temp <- lx.kids.arr[ , , paste(reference_years)]
   return(lx_array_temp)
+}
+
+# Create measures equivalent to Emily's 
+# Comments inside explai nmore and see paper
+offspring_death_prevalence <- function(type, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF){
+  
+  # 1. From women to mothers
+  
+  # Theory:
+  
+  # Now, if we knew the fraction of women aged 44-49 who are mothers, 
+  # then we could rescale. Say that 90% of women 44-49 have had at 
+  # least a child. Then each *mother* has lost X/90 children.
+  
+  # If we do not have the fraction of women aged 44-49 who are mothers, 
+  # we could calculate it from age specific fertility rates. We can 
+  # consider the fertility rates as “hazard rates” and evaluate how many 
+  # women have “survived” having children by the time they are 44-49 if 
+  # the go through the given age specific fertility rates at each age. 
+  # 1-(fraction of survivors) would be the fraction of “ever been mothers”.
+  
+  # Creates fertility tables assuming that
+  # ASFR is the hazard rate or nqx column
+  
+  share_of_women_are_mothers <- 
+    ASFRC %>% 
+    filter(between(Cohort, 1950, 2000)) %>% 
+    mutate(asfr = ASFR/1000) %>% 
+    select(cohort = Cohort, country, age = Age, asfr) %>% 
+    group_by(cohort, country) %>% 
+    mutate(
+      lx =  qx2lx(asfr, radix = 1)
+      , share_of_women_are_mothers = 1 - lx
+    ) %>% 
+    ungroup %>% 
+    select(-lx)
+  
+  
+  cd_mothers <- merge(
+    abs_df_all %>% 
+      filter(level %in% UQ(type)) %>% 
+      filter(between(age, reprod_age[1], reprod_age[2])) 
+    , share_of_women_are_mothers
+    , by = c("country", "cohort", "age")
+  ) %>% 
+    select(- absolute)
+  
+  # 2. Multiple decrement life table 
+  
+  # Create multplie decrement life tables where 
+  # qx_OD is the first difference of 
+  # child death, so that lx gives the share of women or mothers who have 
+  # experienced the death of a child by age a
+  # qx_mother_death is the probability for a woman to die in that age group
+  # taken from the cohort life tables of the UN
+  
+  # First, get mother qx values from LTC
+  
+  cd_mothers_qx <- merge(
+    cd_mothers
+    , LTCF %>% 
+      select(country = Country, cohort = Cohort, age = Age, qx_mother_death = qx)
+    , by = c("country", "cohort", "age")
+  )
+  
+  cd_table_mult <- 
+    cd_mothers_qx %>% 
+    group_by(cohort, country) %>% 
+    mutate(
+      # This pertains to women who have lost one child or more
+      # Note that the estimate is weighted by the share of women 
+      # survivng to that age group and then by 1000 since ESG
+      # estimates require it
+      nqx_od = diff
+      , nqx = nqx_od + qx_mother_death
+      , bereaved_women = (1 - qx2lx(nqx = nqx, radix = 1)) * 1000
+      , bereaved_mothers = bereaved_women / share_of_women_are_mothers
+    ) %>% 
+    ungroup
+  
+  # 3. Cohort to Period 
+  
+  # We approximate period values from cohort estimates
+  # by taking values on the diagonal
+  
+  cd_p <- 
+    cd_table_mult %>% 
+    # Get cumulative number of child deaths up to age a
+    mutate(year = cohort + age) %>% 
+    select(country, year, age, bereaved_women, bereaved_mothers) %>%
+    filter(year %in% years) %>% 
+    filter(between(age, min(breaks), max(breaks))) %>% 
+    arrange(country, year, age) 
+  
+  # 4. Average CD per age gr 
+  
+  # We can say that a group of, say 100 women aged 44-49, 
+  # have lost X number of children throughout their life. 
+  # Or on average, each woman has lost X/100 children.
+  
+  output <- 
+    cd_p %>% 
+    mutate( agegr = cut(age, breaks, right = F)  ) %>% 
+    filter(!is.na(agegr)) %>% 
+    group_by(country, year, agegr) %>% 
+    summarise(
+      # Option 1, take mean
+      # bereaved_women = mean(bereaved_women)
+      # , bereaved_mothers = mean(bereaved_mothers)
+      # Option 2, take mid-interval value
+      bereaved_women = nth(bereaved_women, n = floor(n()/2))
+      , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
+      # , bereaved_mothers2 = mean(bereaved_mothers, n = floor(n()/2))
+    ) %>% 
+    ungroup 
+  
+  # 5. Export df 
+  if(!is.na(file_name)) write.csv(output, paste0("../../Output/",file_name,".csv"), row.names = F)
+  
+  return(output)  
+  
+}
+
+# Get regions and countries from emiliy's data
+get_regions_iso <- function(df, regions){
+  merge(df, regions, by = "country") %>% 
+    mutate(
+      region = trimws(region) 
+      , iso = countrycode(country, origin = "country.name", "iso3c", warn = F)
+      ) %>% 
+    select(iso, country, region, everything())
 }
 
 interpolate_births_calendar_years <- function(df_5, method = "linear") {
@@ -1288,7 +1420,7 @@ worker_apply_lt <- function(con, countries, cohorts, female_births, LTCF) {
 }
 
 worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_keep, ASFRC,lt_df, max_child_age = NA, path) {
-  
+  # browser()
   # 2.1. Get LT for chosen years
   
   lx_array_temp <- get_lx_array(

@@ -114,7 +114,7 @@ matrix_of_survival_probabilities <- function(LTC, run_checks = F, cos, xs, mas, 
 # xs are allowed reproductive ages
 # This must be the same as the age groups in the asfr data
 cos <- c(1950:2100) # cohorts
-xs <- c(15:49) # reproductive age
+xs <- c(15:50) # reproductive age
 mas<-c(15:100) # mother ages
 
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
