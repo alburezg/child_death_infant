@@ -107,18 +107,19 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
 # Takes survey estimates from Emily and estimates from our models
 # and produces a dataframe where both are shown side-by-side. 
 # THis can later be used for plotting.
-compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), model_df, surv_df) {
+compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), model_measure_keep, model_df, surv_df) {
   
   # 1. Format country names data 
   
   surv_df$survey <- surv_df[ , match(surv_measure_keep, names(surv_df))]
   surv_df[surv_df == ""] <- NA
   
+  model_df$model <- unlist(model_df[, match(model_measure_keep, names(model_df))])
   
   model_df <- 
     model_df  %>% 
     filter(agegr %in% model_agegr_keep) %>% 
-    select(iso, year, model = bereaved_mothers)
+    select(iso, year, model)
   
   # 2. Merge single-year estimates 
   
@@ -126,7 +127,7 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
     surv_df %>% 
       filter(!is.na(year)) %>% 
       filter(!grepl("-", year)) %>% 
-      select(iso, region, year, source, survey)
+      select(iso, region, year, survey)
     , model_df
     , by = c("iso", "year")
   ) %>% 
@@ -140,7 +141,7 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
     mutate(
       year = year_for_missing_countries
     ) %>% 
-    select(iso, year, region, source, survey)
+    select(iso, year, region, survey)
   
   # Merge
   
@@ -189,7 +190,7 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
   # Merge
   
   joint_int <- merge(
-    surv_int %>% select(iso, year, region, source, survey)
+    surv_int %>% select(iso, year, region, survey)
     , model_df_int_means
     , by = c("iso", "year")
   ) %>% 
@@ -198,7 +199,7 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
       , year = surv_int$year_low
     )
   
-  # 5. Plot
+  # 5. For plot
   
   joint_survey_model <- bind_rows(
     joint_single, joint_na, joint_int
@@ -906,6 +907,12 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
   # have lost X number of children throughout their life. 
   # Or on average, each woman has lost X/100 children.
   
+  # For country recorindg
+  old <- unique(cd_p$country)
+  new <- countrycode(old, origin = "country.name", "iso3c", warn = F)
+  
+  # Now come the computation:
+  
   output <- 
     cd_p %>% 
     mutate( agegr = cut(age, breaks, right = F)  ) %>% 
@@ -920,7 +927,9 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
       , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
       # , bereaved_mothers2 = mean(bereaved_mothers, n = floor(n()/2))
     ) %>% 
-    ungroup 
+    ungroup %>% 
+    mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>% 
+    select(iso, everything())
   
   # 5. Export df 
   if(!is.na(file_name)) write.csv(output, paste0("../../Output/",file_name,".csv"), row.names = F)

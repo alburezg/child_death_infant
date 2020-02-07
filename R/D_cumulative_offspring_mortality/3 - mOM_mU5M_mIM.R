@@ -73,3 +73,24 @@ mIM <- offspring_death_prevalence(
   , ASFRC
   , LTCF 
 )
+
+# 4. Export for Emily 
+
+# model_all <- bind_cols(
+#   mim20ic = mIM %>% 
+#     filter(agegr == "[20,45)") %>% 
+#     select(iso, year, bereaved_mothers)
+#   , mim45ic = mIM %>% 
+#     filter(agegr == "[45,50)") %>% 
+#     pull(bereaved_mothers)
+#   , mum20ic = mU5M %>% 
+#     filter(agegr == "[20,45)") %>% 
+#     pull(bereaved_mothers)
+#   , mum45ic = mU5M %>% 
+#     filter(agegr == "[45,50)") %>% 
+#     pull(bereaved_mothers)
+#   , mom45ic = mOM %>% 
+#     filter(agegr == "[45,50)") %>% 
+#     pull(bereaved_mothers)
+# )
+

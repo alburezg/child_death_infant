@@ -28,9 +28,11 @@ source(files[1])
 
 source(files[2])
 
-# 3. Load data about country grouping and format them for the analysis ==== 
+# 3. Get estimates for mOM, mU5M, mIM ==== 
 
 source(files[3])
+
+# 4. Comparisons ====
 
 source(files[4])
 
