@@ -20,5 +20,8 @@ LTCF <- data.table::fread(file = paste0("../../Data/derived/","LTCF.csv"), strin
 
 regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F)
 
+countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
+  pull(country)
+  
 surv <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
   get_regions_iso(., regions)

@@ -152,9 +152,8 @@ prev_wide <-
   select(-iso) %>% 
   select(country, everything()) 
 
-# Order
-# prev_wide <- prev_wide[match(prev_wide$country, surv$country), ]
-
+# Order accoring to original excel
+prev_wide <- prev_wide[match(countries_order, prev_wide$country), ]
 
 write.csv(prev_wide, "../../Output/all_combined.csv", row.names = F)
 
