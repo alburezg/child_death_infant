@@ -829,7 +829,10 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
   # 1-(fraction of survivors) would be the fraction of “ever been mothers”.
   
   # Creates fertility tables assuming that
-  # ASFR is the hazard rate or nqx column
+  # ASFR is the hazard rate
+  
+  # Converting hazard rates to probabilities (nqx) is done following Wachter:
+  # nqx = 1 - e^(-h*n)
   
   share_of_women_are_mothers <- 
     ASFRC %>% 
@@ -838,7 +841,10 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
     select(cohort = Cohort, country, age = Age, asfr) %>% 
     group_by(cohort, country) %>% 
     mutate(
-      lx =  qx2lx(asfr, radix = 1)
+      # Create probability of exiting poulation of 
+      # childless women asnqx = 1 - e^(-h*n)
+      nqx = 1 - exp(-asfr)
+      , lx =  qx2lx(nqx = nqx, radix = 1)
       , share_of_women_are_mothers = 1 - lx
     ) %>% 
     ungroup %>% 
@@ -857,8 +863,8 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
   # 2. Multiple decrement life table 
   
   # Create multplie decrement life tables where 
-  # qx_OD is the first difference of 
-  # child death, so that lx gives the share of women or mothers who have 
+  # qx_OD is the probability of experiencig child death
+  # at age x, so that lx gives the share of women or mothers who have 
   # experienced the death of a child by age a
   # qx_mother_death is the probability for a woman to die in that age group
   # taken from the cohort life tables of the UN
@@ -880,9 +886,16 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
       # Note that the estimate is weighted by the share of women 
       # survivng to that age group and then by 1000 since ESG
       # estimates require it
-      nqx_od = diff
+      # Create probability of experiencing child death as
+      # nqx = 1 - e^(-h*n)
+      nqx_od = 1 - exp(-diff)
       , nqx = nqx_od + qx_mother_death
       , bereaved_women = (1 - qx2lx(nqx = nqx, radix = 1)) * 1000
+      # We can say that a group of, say 100 women aged 44-49, 
+      # have lost X number of children throughout their life. 
+      # Or on average, each woman has lost X/100 children.
+      # but only x/(100*share_of_women_are_mothers) mothers
+      # have experienced child death:
       , bereaved_mothers = bereaved_women / share_of_women_are_mothers
     ) %>% 
     ungroup
@@ -902,10 +915,7 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
     arrange(country, year, age) 
   
   # 4. Average CD per age gr 
-  
-  # We can say that a group of, say 100 women aged 44-49, 
-  # have lost X number of children throughout their life. 
-  # Or on average, each woman has lost X/100 children.
+
   
   # For country recorindg
   old <- unique(cd_p$country)
