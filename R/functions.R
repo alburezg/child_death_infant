@@ -916,12 +916,9 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
   
   # 4. Average CD per age gr 
 
-  
   # For country recorindg
   old <- unique(cd_p$country)
   new <- countrycode(old, origin = "country.name", "iso3c", warn = F)
-  
-  # Now come the computation:
   
   output <- 
     cd_p %>% 
@@ -935,7 +932,6 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
       # Option 2, take mid-interval value
       bereaved_women = nth(bereaved_women, n = floor(n()/2))
       , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
-      # , bereaved_mothers2 = mean(bereaved_mothers, n = floor(n()/2))
     ) %>% 
     ungroup %>% 
     mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>% 
