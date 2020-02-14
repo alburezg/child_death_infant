@@ -16,9 +16,8 @@ reg_exclude <- "COUNTRIES EXCLUDED (islands/very small territories/populations)"
 # use 2016, the 'newest' information.
 year_for_missing_countries <- 2016
 
-# I estimated bereaved women and mothers, which is suppsed to be better
-# but is giving worse estimates
-model_measure_keep <- "bereaved_women"
+# 
+measure <- "women"
 
 # 1. mOM ~~~~ ----
 
@@ -33,7 +32,7 @@ mOM4549 <- compare_measures(
   year_for_missing_countries
   , surv_measure_keep
   , model_agegr_keep
-  , model_measure_keep
+  , measure
   , model_df = mOM
   , surv_df = surv
 )
@@ -51,7 +50,7 @@ mU5M2044 <- compare_measures(
   year_for_missing_countries
   , surv_measure_keep
   , model_agegr_keep
-  , model_measure_keep
+  , measure
   , model_df = mU5M
   , surv_df = surv
 )
@@ -67,7 +66,7 @@ mu5M4550 <- compare_measures(
   year_for_missing_countries
   , surv_measure_keep
   , model_agegr_keep
-  , model_measure_keep
+  , measure
   , model_df = mU5M
   , surv_df = surv
 )
@@ -85,7 +84,7 @@ mIM2044 <- compare_measures(
   year_for_missing_countries
   , surv_measure_keep
   , model_agegr_keep
-  , model_measure_keep
+  , measure
   , model_df = mIM
   , surv_df = surv
 )
@@ -101,7 +100,7 @@ mIM4550 <- compare_measures(
   year_for_missing_countries
   , surv_measure_keep
   , model_agegr_keep
-  , model_measure_keep
+  , measure
   , model_df = mIM
   , surv_df = surv
 )

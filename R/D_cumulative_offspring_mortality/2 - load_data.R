@@ -23,5 +23,28 @@ regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F)
 countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
   pull(country)
   
+
+# 2. Survey estimates ----
+
+# 20200214_women.csv and 20200214_mothers.csv are csv-versions derived from the original
+# 20200214_updated DHS estimates.xlsx file sent by Emily.
+# They do NOT include MICS estimates, only DHS
+
+surv <- 
+  bind_rows(
+    read.csv("../../Data/emily/20200214_women.csv", stringsAsFactors = F) %>% 
+      mutate(measure = "women")
+    , read.csv("../../Data/emily/20200214_mothers.csv", stringsAsFactors = F) %>% 
+      mutate(measure = "mothers")
+  ) %>% 
+  get_regions_iso(., regions) %>% 
+  arrange(measure, country) %>% 
+  data.frame()
+
+
+# global indicator data_20200206.csv includes all estimates for all countries but 
+# only refers to mothers!
+# The functions were written originally for this data
+
 surv <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
   get_regions_iso(., regions)

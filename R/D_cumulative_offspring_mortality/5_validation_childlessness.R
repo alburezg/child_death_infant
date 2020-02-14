@@ -27,8 +27,6 @@
 
 # C - Check with estimates of never been mothers from Emily. 
 
-library(readxl)
-
 cch <- read_excel("../../Data/hfd/CCH.xlsx", sheet = "Cohort childlessness", skip = 2)
 
 # Need to double-check, but I assume  that '.' in the Excel sheet means NA and not 0
@@ -105,7 +103,6 @@ model_hfd <- merge(
 
 # 3. Graphic comparisson ====
 
-
 # Plot diferences
 
 # Estonia is way off the carths for some reason
@@ -140,12 +137,22 @@ df_group <- merge(
   , by = "iso"
   ) 
 
+(
+  p_childless_times <- 
 df_group %>% 
   ggplot(aes(x = cohort, y = dev, colour = iso)) +
   geom_line() +
   geom_hline(yintercept = 0) +
   facet_wrap(~dev_gr, scales = "free_y") +
-  theme_bw()
+  theme_bw(base_size = 24)
+)
+
+ggsave(
+  paste0("../../Output/childless_times.pdf")
+  , p_childless_times
+  , width = 18
+  , height = 14
+)
 
 # MSE error ====
 

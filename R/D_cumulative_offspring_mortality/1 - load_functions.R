@@ -5,6 +5,7 @@ wrangling <- c(
   "tidyverse"
   , "countrycode"
   # , "plyr"
+  , "readxl"
 )
 
 library2(wrangling)

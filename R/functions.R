@@ -107,9 +107,13 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
 # Takes survey estimates from Emily and estimates from our models
 # and produces a dataframe where both are shown side-by-side. 
 # THis can later be used for plotting.
-compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), model_measure_keep, model_df, surv_df) {
+compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), measure, model_df, surv_df) {
+  
+  model_measure_keep <- paste0("bereaved_", measure)
   
   # 1. Format country names data 
+  
+  surv_df <- surv_df[surv_df$measure == measure, ]
   
   surv_df$survey <- surv_df[ , match(surv_measure_keep, names(surv_df))]
   surv_df[surv_df == ""] <- NA
