@@ -815,7 +815,7 @@ get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../
 
 # Create measures equivalent to Emily's 
 # Comments inside explai nmore and see paper
-offspring_death_prevalence <- function(type, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF){
+offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF){
   
   # 1. From women to mothers
   
@@ -854,10 +854,14 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
     ungroup %>% 
     select(-lx)
   
+  # ~~~~~~~~~~~~~~~~~~~
+  # Note tha abs_df_all has higher values in new commit at all ages for level “0_100”
+  # compared to last working commit!!
+  # ~~~~~~~~~~~~~~~~~~~
   
   cd_mothers <- merge(
     abs_df_all %>% 
-      filter(level %in% UQ(type)) %>% 
+      filter(level == k_value) %>% 
       filter(between(age, reprod_age[1], reprod_age[2])) 
     , share_of_women_are_mothers
     , by = c("country", "cohort", "age")
@@ -886,15 +890,19 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
     cd_mothers_qx %>% 
     group_by(cohort, country) %>% 
     mutate(
+      # Create lx with radix 1 for year 15
+      # Note: sould this be 
+      lx_scaled = lx / first(lx)
       # This pertains to women who have lost one child or more
       # Note that the estimate is weighted by the share of women 
       # survivng to that age group and then by 1000 since ESG
       # estimates require it
       # Create probability of experiencing child death as
       # nqx = 1 - e^(-h*n)
-      nqx_od = 1 - exp(-diff)
-      , nqx = nqx_od + qx_mother_death
-      , bereaved_women = (1 - qx2lx(nqx = nqx, radix = 1)) * 1000
+      , nqx_od = 1 - exp(-diff)
+      , bereaved_women = (1 - qx2lx(nqx = nqx_od, radix = 1)) * lx_scaled * 1000
+      # , bereaved_women = (1 - qx2lx(nqx = nqx_od, radix = 1)) / lx_scaled * 1000
+      # , bereaved_women2 = bereaved_women * lx_scaled
       # We can say that a group of, say 100 women aged 44-49, 
       # have lost X number of children throughout their life. 
       # Or on average, each woman has lost X/100 children.
@@ -903,6 +911,32 @@ offspring_death_prevalence <- function(type, file_name, years = 2010:2019, break
       , bereaved_mothers = bereaved_women / share_of_women_are_mothers
     ) %>% 
     ungroup
+  
+  
+  # Depcreacted! 20200214 after extensive comparissons between commits
+  # in Github
+  # Multiple decrement table, created too high estimates
+  # cd_table_mult <- 
+  #   cd_mothers_qx %>% 
+  #   group_by(cohort, country) %>% 
+  #   mutate(
+  #     # This pertains to women who have lost one child or more
+  #     # Note that the estimate is weighted by the share of women 
+  #     # survivng to that age group and then by 1000 since ESG
+  #     # estimates require it
+  #     # Create probability of experiencing child death as
+  #     # nqx = 1 - e^(-h*n)
+  #     nqx_od = 1 - exp(-diff)
+  #     , nqx = nqx_od + qx_mother_death
+  #     , bereaved_women = (1 - qx2lx(nqx = nqx, radix = 1)) * 1000
+  #     # We can say that a group of, say 100 women aged 44-49, 
+  #     # have lost X number of children throughout their life. 
+  #     # Or on average, each woman has lost X/100 children.
+  #     # but only x/(100*share_of_women_are_mothers) mothers
+  #     # have experienced child death:
+  #     , bereaved_mothers = bereaved_women / share_of_women_are_mothers
+  #   ) %>% 
+  #   ungroup
   
   # 3. Cohort to Period 
   
