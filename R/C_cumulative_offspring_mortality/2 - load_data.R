@@ -46,5 +46,5 @@ surv <-
 # only refers to mothers!
 # The functions were written originally for this data
 
-surv <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
-  get_regions_iso(., regions)
+# surv <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
+#   get_regions_iso(., regions)

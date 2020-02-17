@@ -16,149 +16,81 @@ reg_exclude <- "COUNTRIES EXCLUDED (islands/very small territories/populations)"
 # use 2016, the 'newest' information.
 year_for_missing_countries <- 2016
 
-# 
-measure <- "women"
+# 1. Compare for Women ----
 
-# 1. mOM ~~~~ ----
-
-# 1.1. mOM4549 ----
-
-# Measure to keep from the survey estimates
-surv_measure_keep <- c("mom45")
-# Age group for model data
-model_agegr_keep <- c("[45,50)")
-
-mOM4549 <- compare_measures(
-  year_for_missing_countries
-  , surv_measure_keep
-  , model_agegr_keep
-  , measure
-  , model_df = mOM
-  , surv_df = surv
-)
-
-# 2. mU5M ~~~~ ----
-
-# 2.1 mU5M2044 ====
-
-# Measure to keep from the survey estimates
-surv_measure_keep <- c("mum20")
-# Age group for model data
-model_agegr_keep <- c("[20,45)")
-
-mU5M2044 <- compare_measures(
-  year_for_missing_countries
-  , surv_measure_keep
-  , model_agegr_keep
-  , measure
-  , model_df = mU5M
-  , surv_df = surv
-)
-
-# 2.2 mU5M4549 ====
-
-# Measure to keep from the survey estimates
-surv_measure_keep <- c("mum45")
-# Age group for model data
-model_agegr_keep <- c("[45,50)")
-
-mu5M4550 <- compare_measures(
-  year_for_missing_countries
-  , surv_measure_keep
-  , model_agegr_keep
-  , measure
-  , model_df = mU5M
-  , surv_df = surv
-)
-
-# 3. mIM ~~~~ ----
-
-# 2.1 mU5M2044 ====
-
-# Measure to keep from the survey estimates
-surv_measure_keep <- c("mim20")
-# Age group for model data
-model_agegr_keep <- c("[20,45)")
-
-mIM2044 <- compare_measures(
-  year_for_missing_countries
-  , surv_measure_keep
-  , model_agegr_keep
-  , measure
-  , model_df = mIM
-  , surv_df = surv
-)
-
-# 2.2 mIM4549 ====
-
-# Measure to keep from the survey estimates
-surv_measure_keep <- c("mim45")
-# Age group for model data
-model_agegr_keep <- c("[45,50)")
-
-mIM4550 <- compare_measures(
-  year_for_missing_countries
-  , surv_measure_keep
-  , model_agegr_keep
-  , measure
-  , model_df = mIM
-  , surv_df = surv
-)
-
-# 4. Consolidate ----
-
-prevalence <- bind_rows(
-   mOM4549 %>% mutate(
-    measure = "mOM"
-    , ages = "45-49"
+prev_women <- 
+  compare_measures_bulk(
+    measure = "women"
+    , export = T
   )
-  , mU5M2044 %>% mutate(
-    measure = "mU5M"
-    , ages = "20-44"
-  )
-  , mu5M4550 %>% mutate(
-    measure = "mU5M"
-    , ages = "45-49"
-  )
-  , mIM2044 %>% mutate(
-    measure = "mIM"
-    , ages = "20-44"
-  )
-  , mIM4550 %>% mutate(
-    measure = "mIM"
-    , ages = "45-49"
-  )
-) %>% 
-  mutate(level = paste0(measure, "_", ages))
 
-# 4. Export for Emily ----
+# 1.1. Plot mothers ====
 
-rownames(prevalence) <- 1:nrow(prevalence)
-
-old <- unique(prevalence$level)
-new <- paste0(c("mom45", "mum20", "mum45", "mim20", "mim45"), "ic")
-
-prev_wide <- 
-  prevalence %>% 
-  select(iso, level, model) %>% 
-  mutate(level = plyr::mapvalues(level, old, new)) %>% 
-  pivot_wider(names_from = level, values_from = model, values_fn = list(model = mean)) %>% 
-  merge(
-  .
-  , surv %>% select(iso, country = country)
-  , by = c("iso")
-) %>% 
-  select(-iso) %>% 
-  select(country, everything()) 
-
-# Order accoring to original excel
-prev_wide <- prev_wide[match(countries_order, prev_wide$country), ]
-
-write.csv(prev_wide, "../../Output/all_combined.csv", row.names = F)
-
-# 6. Plot ----
-
-prev_list <- split(prevalence, prevalence$level)
+prev_list <- split(prev_women, prev_women$level)
 
 # This saves graphs as pdfs
-plots <- lapply(prev_list, plot_comparison, export = T) 
+plots <- lapply(prev_list, plot_comparison, export = T, export_name = "women") 
+
+# 2. Compare for Mothers ----
+
+prev_mothers <- 
+  compare_measures_bulk(
+    measure = "mothers"
+    , export = T
+  )
+
+# 2.1. Plot mothers ====
+
+prev_list <- split(prev_mothers, prev_mothers$level)
+
+# This saves graphs as pdfs
+plots <- lapply(prev_list, plot_comparison, export = T, export_name = "mothers") 
+
+# 3. Error rate ----
+
+# Easy way to do this, have a line plot showing the mean difference by measure 
+# for women and mothers separately
+
+prevalence <- bind_rows(
+  prev_women %>% mutate(denominator = "women")
+  , prev_mothers %>% mutate(denominator = "mothers")
+)
+
+levs <- c("mOM_45-49",  "mU5M_20-44", "mU5M_45-49", "mIM_20-44",  "mIM_45-49")
+
+# 3.1. Plot absolute error ====
+
+p_error <- 
+  prevalence %>% 
+  # mutate(level = factor(level, levels = levs)) %>% 
+  group_by(region, measure, ages, denominator) %>%
+  dplyr::summarise(
+    abs = median(model - survey)
+    , share = abs/median(survey)
+  ) %>%
+  ungroup %>%  
+  ggplot(aes(x = denominator, y = abs)) +
+  geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
+  facet_grid(ages ~ measure) +
+  scale_y_continuous("Median difference in estimates (model-survey)") +
+  scale_x_discrete("Denominator") +
+  # geom_hline(yintercept = 1) +
+  theme_bw()
+
+ggsave("../../Output/measures_error.pdf", p_error, width = 12, height = 10)
+
+# prevalence %>% 
+#   mutate(level = factor(level, levels = levs)) %>% 
+#   group_by(region, level, denominator) %>%
+#   dplyr::summarise(
+#     # abs = mean(model - survey)
+#     # , share = abs/mean(survey)
+#     abs = median(model - survey)
+#     , share = abs/median(survey)
+#   ) %>%
+#   ungroup %>% 
+#   ggplot(aes(x = level, y = abs)) +
+#   geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
+#   facet_grid(~denominator) +
+#   # geom_hline(yintercept = 1) +
+#   theme_bw()

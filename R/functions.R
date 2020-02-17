@@ -108,7 +108,7 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
 # and produces a dataframe where both are shown side-by-side. 
 # THis can later be used for plotting.
 compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), measure, model_df, surv_df) {
-  
+  # browser()
   model_measure_keep <- paste0("bereaved_", measure)
   
   # 1. Format country names data 
@@ -128,12 +128,13 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
   # 2. Merge single-year estimates 
   
   joint_single <- merge(
-    surv_df %>% 
+    model_df
+    , surv_df %>% 
       filter(!is.na(year)) %>% 
       filter(!grepl("-", year)) %>% 
       select(iso, region, year, survey)
-    , model_df
     , by = c("iso", "year")
+    , all.x = F
   ) %>% 
     mutate(year = as.numeric(year))
   
@@ -150,9 +151,10 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
   # Merge
   
   joint_na <- merge(
-    surv_na 
-    , model_df
+    model_df
+    , surv_na 
     , by = c("iso", "year")
+    , all.x = F
   )
   
   # 4. Get averages for compund years 
@@ -194,9 +196,10 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
   # Merge
   
   joint_int <- merge(
-    surv_int %>% select(iso, year, region, survey)
-    , model_df_int_means
+    model_df_int_means
+    , surv_int %>% select(iso, year, region, survey)
     , by = c("iso", "year")
+    , all.x = F
   ) %>% 
     mutate(
       year_real = year
@@ -215,6 +218,157 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
 }
 
 
+# Compare all measures
+compare_measures_bulk <- function(measure, export){
+  
+  surv_measure_keep_all <- c("mom45", "mum20", "mum45", "mim20", "mim45")
+  model_agegr_keep_all <- c("[45,50)", "[20,45)")
+  
+  # 1. mOM ~~~~ 
+  
+  # 1.1. mOM4549 
+  
+  # Measure to keep from the survey estimates
+  surv_measure_keep <- c("mom45")
+  # Age group for model data
+  model_agegr_keep <- c("[45,50)")
+  
+  mOM4549 <- compare_measures(
+    year_for_missing_countries
+    , surv_measure_keep
+    , model_agegr_keep
+    , measure
+    , model_df = mOM
+    , surv_df = surv
+  )
+  
+  # 2. mU5M ~~~~ 
+  
+  # 2.1 mU5M2044 
+  
+  # Measure to keep from the survey estimates
+  surv_measure_keep <- c("mum20")
+  # Age group for model data
+  model_agegr_keep <- c("[20,45)")
+  
+  mU5M2044 <- compare_measures(
+    year_for_missing_countries
+    , surv_measure_keep
+    , model_agegr_keep
+    , measure
+    , model_df = mU5M
+    , surv_df = surv
+  )
+  
+  # 2.2 mU5M4549 
+  
+  # Measure to keep from the survey estimates
+  surv_measure_keep <- c("mum45")
+  # Age group for model data
+  model_agegr_keep <- c("[45,50)")
+  
+  mu5M4550 <- compare_measures(
+    year_for_missing_countries
+    , surv_measure_keep
+    , model_agegr_keep
+    , measure
+    , model_df = mU5M
+    , surv_df = surv
+  )
+  
+  # 3. mIM ~~~~ 
+  
+  # 2.1 mU5M2044 
+  
+  # Measure to keep from the survey estimates
+  surv_measure_keep <- c("mim20")
+  # Age group for model data
+  model_agegr_keep <- c("[20,45)")
+  
+  mIM2044 <- compare_measures(
+    year_for_missing_countries
+    , surv_measure_keep
+    , model_agegr_keep
+    , measure
+    , model_df = mIM
+    , surv_df = surv
+  )
+  
+  # 2.2 mIM4549 
+  
+  # Measure to keep from the survey estimates
+  surv_measure_keep <- c("mim45")
+  # Age group for model data
+  model_agegr_keep <- c("[45,50)")
+  
+  mIM4550 <- compare_measures(
+    year_for_missing_countries
+    , surv_measure_keep
+    , model_agegr_keep
+    , measure
+    , model_df = mIM
+    , surv_df = surv
+  )
+  
+  # 4. Consolidate 
+  
+  prevalence <- bind_rows(
+    mOM4549 %>% mutate(
+      measure = "mOM"
+      , ages = "45-49"
+    )
+    , mU5M2044 %>% mutate(
+      measure = "mU5M"
+      , ages = "20-44"
+    )
+    , mu5M4550 %>% mutate(
+      measure = "mU5M"
+      , ages = "45-49"
+    )
+    , mIM2044 %>% mutate(
+      measure = "mIM"
+      , ages = "20-44"
+    )
+    , mIM4550 %>% mutate(
+      measure = "mIM"
+      , ages = "45-49"
+    )
+  ) %>% 
+    mutate(level = paste0(measure, "_", ages))
+  
+  if(export) {
+    # 4. Export for Emily 
+    
+    rownames(prevalence) <- 1:nrow(prevalence)
+    
+    old <- unique(prevalence$level)
+    new <- paste0(c("mom45", "mum20", "mum45", "mim20", "mim45"), "ic")
+    
+    prev_wide <- 
+      prevalence %>% 
+      select(iso, level, model) %>% 
+      mutate(level = plyr::mapvalues(level, old, new)) %>% 
+      pivot_wider(names_from = level, values_from = model, values_fn = list(model = mean)) %>% 
+      merge(
+        .
+        , surv %>% select(iso, country = country)
+        , by = c("iso")
+      ) %>% 
+      select(-iso) %>% 
+      select(country, everything()) 
+    
+    # Order accoring to original excel
+    prev_wide <- prev_wide[match(countries_order, prev_wide$country), ]
+    
+    file_name <- paste0("../../Output/all_combined_",measure ,".csv")
+    
+    write.csv(prev_wide, file_name, row.names = F)
+    print(paste("Saved:", file_name))
+  }
+  
+  return(prevalence )
+  
+}
 
 expand_asfr_age <- function(l_5_5, grouped_ages, method = "linear", col = "value") {
   
@@ -1348,7 +1502,7 @@ LT_period_to_cohort <- function(df, years, ages, parallel = F, numCores = 4) {
 }
 
 # TO compare model and emily suirvey estimates
-plot_comparison <- function(df, base_size = 15, point_size = 4, export = T) {
+plot_comparison <- function(df, base_size = 15, point_size = 4, export = T, export_name = NA) {
   
   leg <- data.frame(
     x = c(500, 500)
@@ -1391,10 +1545,12 @@ plot_comparison <- function(df, base_size = 15, point_size = 4, export = T) {
   
   if(export) {
     
-    nam <- unique(df$level)
-      
+    nam <- paste0(unique(df$level), ifelse(is.na(export_name), "", paste0("_", export_name)) )
+    
+    p_name <- paste0("../../Output/",nam,"_comparative.pdf")
+    
     ggsave(
-      paste0("../../Output/",nam,"_comparative.pdf")
+      p_name
       , p
       , width = 18
       , height = 14
