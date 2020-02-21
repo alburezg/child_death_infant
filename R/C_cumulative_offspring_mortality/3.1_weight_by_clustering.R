@@ -1,4 +1,11 @@
 
+# Status 20200221
+# - the weighted model estimates are not better
+# than the unweighted ones. 
+
+
+
+
 # Attempt to improve model estimates by accounting for heterogeneity of
 # child death.
 # Reasons why our estimates may be higher than Emily’s
@@ -27,6 +34,7 @@
 
 # agr_keep <- "45-49"
 agr_keep <- c("20-44","45-49")
+year_for_missing_countries <- 2016
 
 # 1. Get df to compare ====
 
@@ -128,7 +136,8 @@ estimates <- data.frame(do.call(rbind,
                                   d %>% 
                                     mutate(
                                       mod1 = predict(lm(model ~ mrom45, data = .))
-                                      # , mod2 = predict(lm(model ~ mrom45 + region, data = .))
+                                      , mod2 = predict(lm(diff ~ mrom45, data = .))
+                                      , mod2 = model - mod2
                                       # , mod3 = predict(lm(model ~ mrom45 + region + level, data = .))
                                       , diff1 =  survey - mod1
                                       # , diff2 =  survey - mod2
@@ -183,9 +192,9 @@ weighted <- estimates %>%
 # 
 # l <- split(comparison, list(comparison$denominator))
 # 
-# estimates <- data.frame(do.call(rbind, 
+# estimates <- data.frame(do.call(rbind,
 #                                 lapply(l, function(d) {
-#                                   d %>% 
+#                                   d %>%
 #                                     mutate(
 #                                       mod1 = predict(lm(model ~ mrom45, data = .))
 #                                       , mod2 = predict(lm(model ~ mrom45 + region, data = .))
@@ -196,7 +205,7 @@ weighted <- estimates %>%
 #                                       , improved1 = abs(diff1) < abs(diff)
 #                                       , improved2 = abs(diff2) < abs(diff)
 #                                       , improved3 = abs(diff3) < abs(diff)
-#                                     ) %>% 
+#                                     ) %>%
 #                                     select(iso, denominator, measure, ages, level, region, model, survey, starts_with("mod"), starts_with("diff"), starts_with("improved"))
 #                                 })
 # ))

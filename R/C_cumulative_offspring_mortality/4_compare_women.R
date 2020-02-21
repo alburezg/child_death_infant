@@ -52,8 +52,8 @@ prev_mothers <-
 
 # merge with weighted estimates
 
-prev_mothers2 <- merge(
-  prev_women 
+prev_mothers <- merge(
+  prev_mothers 
   , weighted %>% 
     filter(denominator == "mothers") %>% 
     select(iso, level, model_weighted)
@@ -106,6 +106,10 @@ prevalence <- bind_rows(
 ggsave("../../Output/measures_error.pdf", p_error, width = 12, height = 10)
 
 # 3.1. Plot weighter absolute error ====
+
+# 20200221 Interpretation:
+
+# weighting by 'clustering' did not improve results
 
 (
   p_error <- 
