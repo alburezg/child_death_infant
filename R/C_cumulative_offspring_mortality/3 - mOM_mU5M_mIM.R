@@ -39,7 +39,8 @@ reprod_age <- c(15,50)
 
 mOM <- offspring_death_prevalence(
   k_value = "0_100" # age ranges for child death
-  , file_name = "mOM" # For exporting
+  # , file_name = "mOM" # For exporting, file_name = NA # For exporting
+  , file_name = NA # For exporting
   , years = years
   , breaks = breaks
   , reprod_age = reprod_age
@@ -52,7 +53,8 @@ mOM <- offspring_death_prevalence(
 
 mU5M <- offspring_death_prevalence(
   k_value = "0_5" # age ranges for child death
-  , file_name = "mU5M" # For exporting
+  # , file_name = "mU5M" # For exporting
+  , file_name = NA # For exporting
   , years = years
   , breaks = breaks
   , reprod_age = reprod_age
@@ -65,7 +67,8 @@ mU5M <- offspring_death_prevalence(
 
 mIM <- offspring_death_prevalence(
   k_value = "0_1" # age ranges for child death
-  , file_name = "mIM" # For exporting
+  # , file_name = "mIM" # For exporting
+  , file_name = NA # For exporting
   , years = years
   , breaks = breaks
   , reprod_age = reprod_age

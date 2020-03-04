@@ -11,6 +11,12 @@
 # Version 3, 29 June 2007     #
 # *~^**~^**~^**~^**~^**~^**~^*#
 
+# To Do! 20200302
+# - csv output for Emily
+# - Comparisson graphs with ALL countries
+# - Greenland is not in the WPP data
+# As it is not a UN member state
+
 
 if(!require("stringr")) {
   install.packages("stringr")

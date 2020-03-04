@@ -1,6 +1,7 @@
 
 # Compare to Emily's estimates from MICS and DHS
-# Currently, only implemented for mOM4549
+# Produce plot comparing estimates for all countries grouped by region
+# including those with and without survey data
 
 # 0. Parameters ----
 
@@ -22,18 +23,19 @@ prev_women <-
   compare_measures_bulk(
     measure = "women"
     , export = T
+    , regions = regions
   )
 
 # merge with weighted estimates
 
-prev_women <- merge(
-  prev_women 
-  , weighted %>% 
-    filter(denominator == "women") %>% 
-    select(iso, level, model_weighted)
-  , by = c("iso", "level")
-  , all.x = T
-)
+# prev_women <- merge(
+#   prev_women 
+#   , weighted %>% 
+#     filter(denominator == "women") %>% 
+#     select(iso, level, model_weighted)
+#   , by = c("iso", "level")
+#   , all.x = T
+# )
 
 # 1.1. Plot women ====
 
@@ -48,18 +50,19 @@ prev_mothers <-
   compare_measures_bulk(
     measure = "mothers"
     , export = T
+    , regions = regions
   )
 
 # merge with weighted estimates
-
-prev_mothers <- merge(
-  prev_mothers 
-  , weighted %>% 
-    filter(denominator == "mothers") %>% 
-    select(iso, level, model_weighted)
-  , by = c("iso", "level")
-  , all.x = T
-)
+# 
+# prev_mothers <- merge(
+#   prev_mothers 
+#   , weighted %>% 
+#     filter(denominator == "mothers") %>% 
+#     select(iso, level, model_weighted)
+#   , by = c("iso", "level")
+#   , all.x = T
+# )
 
 # 2.1. Plot mothers ====
 
@@ -89,7 +92,7 @@ prevalence <- bind_rows(
   # mutate(level = factor(level, levels = levs)) %>% 
   group_by(region, measure, ages, denominator) %>%
   dplyr::summarise(
-    abs = median(model - survey)
+    abs = median(model - survey, na.rm = T)
     , share = abs/median(survey)
   ) %>%
   ungroup %>%  
@@ -118,7 +121,7 @@ ggsave("../../Output/measures_error.pdf", p_error, width = 12, height = 10)
     # mutate(level = factor(level, levels = levs)) %>% 
     group_by(region, measure, ages, denominator) %>%
     dplyr::summarise(
-      abs = median(model - survey)
+      abs = median(model - survey, na.rm = T)
       , share = abs/median(survey)
     ) %>%
     ungroup %>%  

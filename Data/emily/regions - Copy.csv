@@ -1,0 +1,246 @@
+country,region
+Angola,Africa 
+Burkina Faso,Africa 
+Burundi,Africa 
+Benin,Africa 
+Botswana* ,Africa 
+Democratic Republic of the Congo,Africa 
+Central African Republic,Africa 
+Congo,Africa 
+C¦te D'Ivoire,Africa 
+Cameroon,Africa 
+Eritrea,Africa 
+Ethiopia,Africa 
+Gabon,Africa 
+Ghana,Africa 
+Gambia,Africa 
+Guinea,Africa 
+Equatorial Guinea,Africa 
+Guinea-Bissau,Africa 
+Kenya,Africa 
+Liberia,Africa 
+Lesotho,Africa 
+Madagascar,Africa 
+Mali,Africa 
+Malawi,Africa 
+Mozambique,Africa 
+Namibia,Africa 
+Niger,Africa 
+Nigeria,Africa 
+Rwanda,Africa 
+South Sudan,Africa 
+Sierra Leone,Africa 
+Senegal,Africa 
+Sao Tome and Principe,Africa 
+Eswatini,Africa 
+Chad,Africa 
+Togo,Africa 
+Tanzania,Africa 
+Uganda,Africa 
+South Africa,Africa 
+Zambia,Africa 
+Zimbabwe,Africa 
+United Arab Emirates,Arab states
+Djibouti,Arab states
+Algeria,Arab states
+Egypt,Arab states
+Iraq,Arab states
+Jordan,Arab states
+Comoros,Arab states
+Kuwait,Arab states
+Lebanon,Arab states
+Libya,Arab states
+Morocco,Arab states
+Mauritania,Arab states
+Oman,Arab states
+Palestinian Territory,Arab states
+Qatar,Arab states
+Saudi Arabia,Arab states
+Sudan,Arab states
+Somalia,Arab states
+Tunisia,Arab states
+Yemen ,Arab states
+Afghanistan,Asia & Pacific
+Australia,Asia & Pacific
+Azerbaijan,Asia & Pacific
+Bangladesh,Asia & Pacific
+Bhutan,Asia & Pacific
+China,Asia & Pacific
+Hong Kong,Asia & Pacific
+Indonesia,Asia & Pacific
+India,Asia & Pacific
+Islamic Republic of Iran,Asia & Pacific
+Japan,Asia & Pacific
+Kyrgyzstan,Asia & Pacific
+Cambodia,Asia & Pacific
+Democratic People's Republic of Korea,Asia & Pacific
+Republic of Korea,Asia & Pacific
+Kazakhstan,Asia & Pacific
+Lao People's Democratic Republic,Asia & Pacific
+Sri Lanka,Asia & Pacific
+Myanmar,Asia & Pacific
+Mongolia,Asia & Pacific
+Maldives,Asia & Pacific
+Malaysia,Asia & Pacific
+Nepal,Asia & Pacific
+New Zealand,Asia & Pacific
+Papua New Guinea,Asia & Pacific
+Philippines,Asia & Pacific
+Pakistan,Asia & Pacific
+Singapore,Asia & Pacific
+Syrian Arab Republic,Asia & Pacific
+Thailand,Asia & Pacific
+Tajikistan,Asia & Pacific
+Turkmenistan,Asia & Pacific
+Timor-Leste,Asia & Pacific
+Taiwan,Asia & Pacific
+Uzbekistan,Asia & Pacific
+Vietnam,Asia & Pacific
+Albania,Europe 
+Armenia,Europe 
+Austria,Europe 
+Bosnia & Herzegovina,Europe 
+Belgium,Europe 
+Bulgaria,Europe 
+Belarus (mics data but no info. child deaths),Europe 
+Switzerland,Europe 
+Cyprus,Europe 
+Czech Republic,Europe 
+Germany,Europe 
+Denmark,Europe 
+Estonia,Europe 
+Spain,Europe 
+Finland,Europe 
+France,Europe 
+United Kingdom,Europe 
+Georgia,Europe 
+Greenland,Europe 
+Greece,Europe 
+Croatia,Europe 
+Hungary,Europe 
+Ireland,Europe 
+Israel,Europe 
+Iceland,Europe 
+Italy,Europe 
+Lithuania,Europe 
+Latvia,Europe 
+"Moldova, Republic of",Europe 
+Macedonia,Europe 
+Netherlands,Europe 
+Norway,Europe 
+Poland,Europe 
+Portugal,Europe 
+Romania,Europe 
+Russian Federation,Europe 
+Sweden,Europe 
+Slovenia,Europe 
+Slovakia,Europe 
+Turkey,Europe 
+Ukraine,Europe 
+Serbia,Europe 
+Montenegro,Europe 
+Canada,North America 
+United States,North America 
+Argentina,South & Latin America
+Bolivia,South & Latin America
+Brazil,South & Latin America
+Belize,South & Latin America
+Chile,South & Latin America
+Colombia,South & Latin America
+Costa Rica,South & Latin America
+Cuba,South & Latin America
+Dominican Republic,South & Latin America
+Ecuador,South & Latin America
+French Guiana,South & Latin America
+Guatemala,South & Latin America
+Guyana,South & Latin America
+Honduras,South & Latin America
+Haiti,South & Latin America
+Jamaica,South & Latin America
+Mexico,South & Latin America
+Nicaragua,South & Latin America
+Panama,South & Latin America
+Peru,South & Latin America
+Puerto Rico,South & Latin America
+Paraguay,South & Latin America
+Suriname,South & Latin America
+El Salvador,South & Latin America
+Trinidad and Tobago,South & Latin America
+Uruguay,South & Latin America
+Venezuela,South & Latin America
+Guadeloupe,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Netherlands Antilles,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Bouvet Island,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Falkland Islands (Malvinas),COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Vincent and the Grenadines,COUNTRIES EXCLUDED (islands/very small territories/populations)
+"Virgin Islands, British",COUNTRIES EXCLUDED (islands/very small territories/populations)
+"Virgin Islands, U.S.",COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Barthelemy,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Martin,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Kitts and Nevis,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Cayman Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Lucia,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Martinique,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Montserrat,COUNTRIES EXCLUDED (islands/very small territories/populations)
+South Georgia and the South Sandwich Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Andorra,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Faroe Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Svalbard and Jan Mayen,COUNTRIES EXCLUDED (islands/very small territories/populations)
+San Marino,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Holy See (Vatican City State),COUNTRIES EXCLUDED (islands/very small territories/populations)
+Aland Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Guernsey,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Isle of Man,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Jersey,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Gibraltar,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Christmas Island,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Heard Island and McDonald Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+British Indian Ocean Territory,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Kiribati,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Marshall Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Northern Mariana Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Vanuatu,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Wallis and Futuna,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Samoa,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Tuvalu,COUNTRIES EXCLUDED (islands/very small territories/populations)
+United States Minor Outlying Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Tokelau,COUNTRIES EXCLUDED (islands/very small territories/populations)
+French Southern Territories,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Pitcairn Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Palau,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Reunion,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Nauru,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Niue,COUNTRIES EXCLUDED (islands/very small territories/populations)
+New Caledonia,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Norfolk Island,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Cocos (Keeling) Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Cook Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Helena,COUNTRIES EXCLUDED (islands/very small territories/populations)
+American Samoa,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Brunei Darussalam,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Antigua and Barbuda,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Anguilla,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Bahrain,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Guam,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Cape Verde,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Mayotte,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Seychelles,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Mauritius,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Fiji,COUNTRIES EXCLUDED (islands/very small territories/populations)
+French Polynesia,COUNTRIES EXCLUDED (islands/very small territories/populations)
+"Micronesia, Federated States of",COUNTRIES EXCLUDED (islands/very small territories/populations)
+Western Sahara,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Macau,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Tonga,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Liechtenstein,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Malta,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Monaco,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Luxembourg,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Bermuda,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Saint Pierre and Miquelon,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Aruba,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Barbados,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Bahamas,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Grenada,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Turks and Caicos Islands,COUNTRIES EXCLUDED (islands/very small territories/populations)
+Dominica,COUNTRIES EXCLUDED (islands/very small territories/populations)

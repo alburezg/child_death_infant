@@ -40,7 +40,13 @@ rates <- read.csv("../../Data/wpp_data/WPP2019_Period_Indicators_Medium.csv", st
 
 # surv1 <- read.csv("../../Data/emily/survey_data_20200130.csv", stringsAsFactors = F) 
 
-regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F)
+regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F) 
+  # mutate(
+  #   region = trimws(region)
+  #   , iso = countrycode(country, origin = "country.name", "iso3c", warn = F)) %>% 
+  # select(country, iso, region)
+
+# write.csv(regions, "../../Data/emily/regions.csv")
 
 countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
   pull(country)
