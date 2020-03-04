@@ -17,6 +17,8 @@ reg_exclude <- "COUNTRIES EXCLUDED (islands/very small territories/populations)"
 # use 2016, the 'newest' information.
 year_for_missing_countries <- 2016
 
+add_indirect_estimates <- T
+
 # 1. Compare for Women ----
 
 prev_women <- 
@@ -24,6 +26,7 @@ prev_women <-
     measure = "women"
     , export = T
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
 
 # merge with weighted estimates
@@ -69,9 +72,16 @@ prev_mothers <-
 prev_list <- split(prev_mothers, prev_mothers$level)
 
 # This saves graphs as pdfs
-plots <- lapply(prev_list, plot_comparison, export = T, export_name = "mothers") 
+plots <- lapply(
+  prev_list
+  , FUN = plot_comparison
+  , export = T
+  , export_name = "mothers"
+  , NorthAmerica = F
+  # , add_indirect_estimates = add_indirect_estimates
+  ) 
 
-# 3. Error rate ----
+# 3. Plot error rate ----
 
 # Easy way to do this, have a line plot showing the mean difference by measure 
 # for women and mothers separately
@@ -85,10 +95,11 @@ prevalence <- bind_rows(
 
 # 3.1. Plot absolute error ====
 
-
 (
   p_error <- 
   prevalence %>% 
+  # Since there is no survey observatios for NA
+  filter(!region %in% "North America") %>% 
   # mutate(level = factor(level, levels = levs)) %>% 
   group_by(region, measure, ages, denominator) %>%
   dplyr::summarise(
@@ -99,7 +110,7 @@ prevalence <- bind_rows(
   ggplot(aes(x = denominator, y = abs)) +
   geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
   facet_grid(ages ~ measure) +
-  scale_y_continuous("Median difference in estimates (model-survey)") +
+  scale_y_continuous("Median difference between model and survey estimates") +
   scale_x_discrete("Denominator") +
   coord_cartesian(ylim = c(-75, 100)) +
   # geom_hline(yintercept = 1) +

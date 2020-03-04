@@ -38,7 +38,17 @@ source(files[2])
 
 source(files[3])
 
-# 4. Comparisons ====
+# 4. Re-scale estimates using measure of clustering ====
+# STATUS 20200304: makes esteimates worst, if anything
+# you can still run it but this needs to be improved
+# in any case, please!
 
-source(files[4])
+# source(files[4])
 
+# 5. Comparisons ====
+
+source(files[5])
+
+# 6. Check childlesness ====
+
+source(files[6])

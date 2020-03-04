@@ -107,10 +107,12 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
 # Takes survey estimates from Emily and estimates from our models
 # and produces a dataframe where both are shown side-by-side. 
 # THis can later be used for plotting.
-compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), measure, model_df, surv_df, regions) {
+compare_measures <- function(year_for_missing_countries = 2018, surv_measure_keep = c("mOM4549"), model_agegr_keep = c("[45,50)"), measure, model_df, surv_df, regions, add_indirect_estimates = T) {
   # browser()
   model_measure_keep <- paste0("bereaved_", measure)
   
+  # For adding indirect estimates later if needed
+  surv_copy <- surv_df
   # 1. Format country names data 
   
   surv_df <- surv_df[surv_df$measure == measure, ]
@@ -236,13 +238,37 @@ compare_measures <- function(year_for_missing_countries = 2018, surv_measure_kee
   ) %>% 
     arrange(iso, year)
   
+  # 7. Add indirect estimates
+  
+  measures_indirect <- c("mim45", "mum45")
+  
+  if(add_indirect_estimates & measure == "mothers" & surv_measure_keep %in% measures_indirect){
+    # browser()
+    print(paste("Adding indirect estimates for cases that apply: mothers and", paste(measures_indirect, collapse = ", ")))
+    # NOTE that this only works for women!!
+    # and only for mim45 and mum45
+    
+    joint_survey_out <- 
+      merge(
+      joint_survey_out
+      , surv_copy %>% 
+        filter(measure == "mothers_indirect") %>% 
+        select(iso, indirect = dplyr::starts_with(surv_measure_keep))
+      , all.x = T
+    )
+    
+  } else {
+    print(paste("NOT adding indirect estimations to", measure, "for", surv_measure_keep))
+    joint_survey_out$indirect <- NA
+  }
+  
   return(joint_survey_out)
   
 }
 
 
 # Compare all measures
-compare_measures_bulk <- function(measure, export, regions){
+compare_measures_bulk <- function(measure, export, regions, add_indirect_estimates = T){
   
   surv_measure_keep_all <- c("mom45", "mum20", "mum45", "mim20", "mim45")
   model_agegr_keep_all <- c("[45,50)", "[20,45)")
@@ -264,6 +290,7 @@ compare_measures_bulk <- function(measure, export, regions){
     , model_df = mOM
     , surv_df = surv
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
   
   # 2. mU5M ~~~~ 
@@ -283,6 +310,7 @@ compare_measures_bulk <- function(measure, export, regions){
     , model_df = mU5M
     , surv_df = surv
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
   
   # 2.2 mU5M4549 
@@ -300,6 +328,7 @@ compare_measures_bulk <- function(measure, export, regions){
     , model_df = mU5M
     , surv_df = surv
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
   
   # 3. mIM ~~~~ 
@@ -319,6 +348,7 @@ compare_measures_bulk <- function(measure, export, regions){
     , model_df = mIM
     , surv_df = surv
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
   
   # 2.2 mIM4549 
@@ -336,6 +366,7 @@ compare_measures_bulk <- function(measure, export, regions){
     , model_df = mIM
     , surv_df = surv
     , regions = regions
+    , add_indirect_estimates = add_indirect_estimates
   )
   
   # 4. Consolidate 
@@ -1550,12 +1581,93 @@ plot_comparison <- function(df, base_size = 15, point_size = 4, export = T, expo
   max_x <- max(c(df$model, df$survey), na.rm = T)
   x_for_label <- max_x*0.8
   
+  
+add_indirect_estimates <- ifelse(all(is.na(df$indirect)), F, T)
+  
+if(add_indirect_estimates){
+  print("Including indirect estimates")
+  
+  if(!NorthAmerica) {
+    df[df$region %in% c("North America", "South & Latin America"), "region"] <- "Americas"
+    
+    region_for_label <- "Europe"
+    height_for_label <- c(20, 22, 24)
+  } else{
+    region_for_label <- "North America"  
+    height_for_label <- c(1,1.25, 1.5)
+  }
+  
+  max_x <- max(c(df$model, df$survey), na.rm = T)
+  x_for_label <- max_x*0.8
+  
   # For label
   
   leg <- data.frame(
-    x = c(x_for_label, x_for_label)
+    x = c(x_for_label, x_for_label, max_x*0.77)
     , y = height_for_label
-    , label = c("Model", "Survey")
+    , label = c("Indirect", "Survey", "Kin-Cohort")
+    , region = region_for_label
+  )
+  
+  # For figures
+  po <- data.frame(
+    x = max_x*0.9
+    , y = height_for_label
+    # , shape = c(17, 16)
+    , shape = c("triangle", "circle", "square")
+    , region = region_for_label
+  )
+  
+  p <-
+    df %>% 
+    mutate(colour = ifelse(is.na(survey), "1", "2")) %>% 
+    filter(!is.na(iso)) %>%
+    filter(!region %in% reg_exclude) %>% 
+    select(-year_real) %>% 
+    ggplot(aes(y = iso)) +
+    # Segment: model - survey
+    geom_segment(aes(x = `survey`, xend = `model`, yend = iso)) +
+    # Segment: model - survey
+    geom_segment(aes(x = `indirect`, xend = `model`, yend = iso), colour = "red") +
+    # Survey = circle
+    geom_point(aes(x = `survey`), shape = 16, size = point_size) +
+    # Model = triangle
+    geom_point(aes(x = `model`, colour = colour), shape = 17, size = point_size) +
+    # Indirect = square
+    geom_point(aes(x = `indirect`, colour = colour), shape = 15, size = point_size) +
+    facet_wrap(~region, scales = "free_y") +
+    scale_x_continuous("mOM 40-49") +
+    # Legend by hand
+    geom_text(aes(x = x, y = y, label = label), size = 4, data = leg) +
+    # annotate("text", x = 40 + x_adj, y = 7.9 + y_adj, label = "Birth cohort of women",
+    #          , hjust = .5, color = "grey20") +
+    geom_point(aes(x = x, y = y, shape = shape), size = point_size, data = po) +
+    scale_shape_discrete(guide = F) +
+    scale_colour_manual("", breaks = c("1", "2"), values = c("red", "black"), guide = F) +
+    theme_bw(base_size = base_size)
+    
+} else if(!add_indirect_estimates) {
+  print("NOT including indiret estimates")
+  
+  # For label
+  
+  if(!NorthAmerica) {
+    df[df$region %in% c("North America", "South & Latin America"), "region"] <- "Americas"
+    
+    region_for_label <- "Europe"
+    height_for_label <- c(20, 22)
+  } else{
+    region_for_label <- "North America"  
+    height_for_label <- c(1,1.25)
+  }
+  
+  max_x <- max(c(df$model, df$survey), na.rm = T)
+  x_for_label <- max_x*0.8
+  
+  leg <- data.frame(
+    x = c(max_x*0.77, x_for_label)
+    , y = height_for_label
+    , label = c("Kin-Cohort", "Survey")
     , region = region_for_label
   )
   
@@ -1568,10 +1680,9 @@ plot_comparison <- function(df, base_size = 15, point_size = 4, export = T, expo
     , region = region_for_label
   )
   
-
-  
   p <- 
     df %>% 
+    select(-indirect) %>% 
     mutate(colour = ifelse(is.na(survey), "1", "2")) %>% 
     # filter(!is.na(survey)) %>% 
     filter(!is.na(iso)) %>%
@@ -1593,6 +1704,8 @@ plot_comparison <- function(df, base_size = 15, point_size = 4, export = T, expo
     scale_shape_discrete(guide = F) +
     scale_colour_manual("", breaks = c("1", "2"), values = c("red", "black"), guide = F) +
     theme_bw(base_size = base_size) 
+}
+  
   
   if(export) {
     

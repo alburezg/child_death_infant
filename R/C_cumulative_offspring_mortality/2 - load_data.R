@@ -66,6 +66,9 @@ surv <-
       mutate(measure = "women")
     , read.csv("../../Data/emily/20200214_mothers.csv", stringsAsFactors = F) %>% 
       mutate(measure = "mothers")
+    # If indirect estimates showuld be included, unomment this line
+    , read.csv("../../Data/emily/20200214_mothers_indirect.csv", stringsAsFactors = F) %>% 
+      mutate(measure = "mothers_indirect")
   ) %>% 
   get_regions_iso(., regions) %>% 
   arrange(measure, country) %>% 
