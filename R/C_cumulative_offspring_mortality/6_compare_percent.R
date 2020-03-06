@@ -19,7 +19,6 @@ iso_keep <- countrycode::countrycode(
 pnas <- 
   prev_women %>% 
   filter(level == "mOM_45-49") %>% 
-  filter(iso %in% iso_keep) %>% 
   select(iso, model, survey) %>% 
   na.omit() %>% 
   mutate(
@@ -29,14 +28,45 @@ pnas <-
 
 # 2. Median difference as share of survey estimates:
 
-pnas  %>% summarise(median(abs))
+pnas  %>%   
+  filter(iso %in% iso_keep) %>% 
+  summarise(median(abs))
 
-# 3. Plot
+# 3. Plot for PNAS regioncountries
 
 pnas %>% 
+  filter(iso %in% iso_keep) %>%
   arrange(desc(diff)) %>% 
   mutate(iso = factor(iso, levels = iso)) %>% 
   ggplot(aes(x = iso, y = diff)) + 
   geom_col() +
-  coord_flip() +
+  # facet_grid(~region) +
   theme_bw()
+
+ggsave(
+  "../../Output/pnas_percent_difference.pdf"
+  , width = 9
+  , height = 7
+)
+
+# 4. Plot_for all countries
+
+  merge(
+    pnas
+    , regions %>% select(iso, region)
+    , by = "iso"
+    , all.x = T
+    , all.y = F
+  ) %>% 
+  arrange(desc(diff)) %>% 
+  mutate(iso = factor(iso, levels = iso)) %>% 
+  ggplot(aes(x = iso, y = diff)) + 
+  geom_col() +
+  facet_wrap(~region) +
+  theme_bw()
+
+# ggsave(
+#   "../../Output/pnas_percent_difference_all.pdf"
+#   , width = 9
+#   , height = 7
+# )

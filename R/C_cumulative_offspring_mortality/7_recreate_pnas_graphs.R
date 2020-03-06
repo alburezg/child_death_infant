@@ -109,22 +109,51 @@ ggsave(
 
 # 2. Plot for all periods ----
 
-(
-  p_full <-
+# 2.1. PNAS style
+
+
+p_full <-
   pnas_comp %>% 
   ggplot(aes(x = year, y = value, colour = Measure)) + 
   geom_line() +
   geom_point(aes(x = year, y = value, shape = Source), data = surv_pnas) +
   facet_wrap( . ~ iso)+
+  scale_x_continuous(breaks = c(2000, 2025, 2050)) +
   theme_bw() +
   coord_cartesian(ylim = c(0, 1000)) +
-  theme(legend.position = "bottom") +
-  ggtitle("")
-)
+  theme(legend.position = "bottom")
 
 ggsave(
   "../../Output/pnas_comparative_full.pdf"
   , p_full
+  , width = 18
+  , height = 14
+)
+
+# 2.2. All countries mashed together
+
+(
+  p_mashed <-
+  merge(
+    pnas_comp
+    , regions %>% select(iso, region)
+    , by = "iso"
+    , all.x = T
+    , all.y = F
+  ) %>% 
+  ggplot(aes(x = year, y = value, colour = Measure)) + 
+  # geom_line(aes(group = Measure), alpha = 0.3) +
+  geom_smooth(aes(group = Measure), se = F) +
+  facet_wrap( . ~ region)+
+  scale_x_continuous(breaks = c(2000, 2025, 2050)) +
+  theme_bw() +
+  coord_cartesian(ylim = c(0, 1000)) +
+  theme(legend.position = "bottom")
+)
+
+ggsave(
+  "../../Output/pnas_comparative_mashed.pdf"
+  , p_mashed
   , width = 18
   , height = 14
 )
