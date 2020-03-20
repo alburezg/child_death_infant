@@ -27,19 +27,10 @@ prev_women <-
     , export = T
     , regions = regions
     , add_indirect_estimates = add_indirect_estimates
-    , surv_df = surv
+    , surv_df = surv %>% mutate(year = year_for_missing_countries)
+    , name_export = "_fixed_2016"
   )
 
-# merge with weighted estimates
-
-# prev_women <- merge(
-#   prev_women 
-#   , weighted %>% 
-#     filter(denominator == "women") %>% 
-#     select(iso, level, model_weighted)
-#   , by = c("iso", "level")
-#   , all.x = T
-# )
 
 # 1.1. Plot women ====
 
@@ -55,19 +46,10 @@ prev_mothers <-
     measure = "mothers"
     , export = T
     , regions = regions
-    , surv_df = surv
+    , surv_df = surv %>% mutate(year = year_for_missing_countries)
+    , name_export = "_fixed_2016"
   )
 
-# merge with weighted estimates
-# 
-# prev_mothers <- merge(
-#   prev_mothers 
-#   , weighted %>% 
-#     filter(denominator == "mothers") %>% 
-#     select(iso, level, model_weighted)
-#   , by = c("iso", "level")
-#   , all.x = T
-# )
 
 # 2.1. Plot mothers ====
 
@@ -81,7 +63,7 @@ plots <- lapply(
   , export_name = "mothers"
   , NorthAmerica = F
   # , add_indirect_estimates = add_indirect_estimates
-) 
+  ) 
 
 # 3. Plot error rate ----
 
@@ -99,24 +81,24 @@ prevalence <- bind_rows(
 
 (
   p_error <- 
-    prevalence %>% 
-    # Since there is no survey observatios for NA
-    filter(!region %in% "North America") %>% 
-    # mutate(level = factor(level, levels = levs)) %>% 
-    group_by(region, measure, ages, denominator) %>%
-    dplyr::summarise(
-      abs = median(model - survey, na.rm = T)
-      , share = abs/median(survey)
-    ) %>%
-    ungroup %>%  
-    ggplot(aes(x = denominator, y = abs)) +
-    geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
-    facet_grid(ages ~ measure) +
-    scale_y_continuous("Median difference between model and survey estimates") +
-    scale_x_discrete("Denominator") +
-    coord_cartesian(ylim = c(-75, 100)) +
-    # geom_hline(yintercept = 1) +
-    theme_bw()
+  prevalence %>% 
+  # Since there is no survey observatios for NA
+  filter(!region %in% "North America") %>% 
+  # mutate(level = factor(level, levels = levs)) %>% 
+  group_by(region, measure, ages, denominator) %>%
+  dplyr::summarise(
+    abs = median(model - survey, na.rm = T)
+    , share = abs/median(survey)
+  ) %>%
+  ungroup %>%  
+  ggplot(aes(x = denominator, y = abs)) +
+  geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
+  facet_grid(ages ~ measure) +
+  scale_y_continuous("Median difference between model and survey estimates") +
+  scale_x_discrete("Denominator") +
+  coord_cartesian(ylim = c(-75, 100)) +
+  # geom_hline(yintercept = 1) +
+  theme_bw()
 )
 
 ggsave("../../Output/measures_error.pdf", p_error, width = 12, height = 10)
@@ -148,19 +130,3 @@ ggsave("../../Output/measures_error.pdf", p_error, width = 12, height = 10)
 )
 
 ggsave("../../Output/measures_error_weighted.pdf", p_error, width = 12, height = 10)
-
-# prevalence %>% 
-#   mutate(level = factor(level, levels = levs)) %>% 
-#   group_by(region, level, denominator) %>%
-#   dplyr::summarise(
-#     # abs = mean(model - survey)
-#     # , share = abs/mean(survey)
-#     abs = median(model - survey)
-#     , share = abs/median(survey)
-#   ) %>%
-#   ungroup %>% 
-#   ggplot(aes(x = level, y = abs)) +
-#   geom_col(aes(fill = region), position = position_dodge(), colour = "black") +
-#   facet_grid(~denominator) +
-#   # geom_hline(yintercept = 1) +
-#   theme_bw()
