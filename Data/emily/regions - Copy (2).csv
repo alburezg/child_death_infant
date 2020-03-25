@@ -3,11 +3,11 @@ Angola,AGO,Africa
 Burkina Faso,BFA,Africa
 Burundi,BDI,Africa
 Benin,BEN,Africa
-Botswana,BWA,Africa
+Botswana* ,BWA,Africa
 Democratic Republic of the Congo,COD,Africa
 Central African Republic,CAF,Africa
 Congo,COG,Africa
-Cote D'Ivoire,CIV,Africa
+C¦te D'Ivoire,CIV,Africa
 Cameroon,CMR,Africa
 Eritrea,ERI,Africa
 Ethiopia,ETH,Africa
@@ -102,7 +102,7 @@ Austria,AUT,Europe
 Bosnia & Herzegovina,BIH,Europe
 Belgium,BEL,Europe
 Bulgaria,BGR,Europe
-Belarus,BLR,Europe
+Belarus (mics data but no info. child deaths),BLR,Europe
 Switzerland,CHE,Europe
 Cyprus,CYP,Europe
 Czech Republic,CZE,Europe

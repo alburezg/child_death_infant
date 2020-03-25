@@ -49,7 +49,10 @@ regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F)
 # write.csv(regions, "../../Data/emily/regions.csv")
 
 countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
+  # For cote divore
+  mutate(country = gsub("C\\?", "Co", country)) %>% 
   pull(country)
+  
   
 
 # 2. Survey estimates ----
