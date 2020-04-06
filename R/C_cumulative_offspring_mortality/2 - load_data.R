@@ -57,6 +57,8 @@ countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv
 
 # 2. Survey estimates ----
 
+# 2.1. Original estimates ====
+
 # 20200214_women.csv and 20200214_mothers.csv are csv-versions derived from the original
 # 20200214_updated DHS estimates.xlsx file sent by Emily.
 # They do NOT include MICS estimates, only DHS
@@ -77,6 +79,12 @@ surv <-
   arrange(measure, country) %>% 
   data.frame()
 
+
+# 2.2. Survey est with CI ====
+
+
+# Here, cols named lb95mim and ub95 mum give confidence intervals
+surv_ci <- haven::read_dta("../../Data/emily/globalmaternalestimates.dta")
 
 # global indicator data_20200206.csv includes all estimates for all countries but 
 # only refers to mothers!
