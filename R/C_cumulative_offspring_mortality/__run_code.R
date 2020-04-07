@@ -10,12 +10,13 @@
 # GNU GENERAL PUBLIC LICENSE  #
 # Version 3, 29 June 2007     #
 # *~^**~^**~^**~^**~^**~^**~^*#
+#        \   ^__^ 
+#        \  (oo)\ ________ 
+#           (__)\         )\ /\ 
+#                ||------w|
+#                ||      ||
 
-# To Do! 20200302
-# - csv output for Emily
-# - Comparisson graphs with ALL countries
-# - Greenland is not in the WPP data
-# As it is not a UN member state
+
 
 
 if(!require("stringr")) {

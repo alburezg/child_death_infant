@@ -835,7 +835,7 @@ expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_
           survival_probs_under_5 <- lx.kids.arr[under_5_mom_ages, paste(ma), paste(co)]
           
           # Second, get new surv probs for the cases where the child's age x's is higher than 
-          # 5
+          # k
           
           survival_probs_over_5 <- survival_probs_over_age(
             max_child_age
@@ -1064,6 +1064,14 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
     mutate(
       # Create probability of exiting poulation of 
       # childless women asnqx = 1 - e^(-h*n)
+      # From the paper:
+      # To estimate an equivalent measure for mothers, we rescale our estimates 
+      # using a similar life table approach. We consider fertility as a “hazard rate” to 
+      # approximate the number of women that “survive” without having children (i.e. remain childless) 
+      # after experiencing a set of age-specific fertility rates. The fraction of women who
+      # have ever been mothers FM_((a,c)) is approximated as 1 minus the fraction of childless women. 
+      # We can now define, for a given cohort, the proportion of mothers (per 1,000 mothers) who have ever 
+      # lost one or more children younger than k
       nqx = 1 - exp(-asfr)
       , lx =  qx2lx(nqx = nqx, radix = 1)
       , share_of_women_are_mothers = 1 - lx
@@ -1085,7 +1093,7 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   ) %>% 
     select(- absolute)
   
-  # 2. Multiple decrement life table 
+  # 2. Implement equations 2-4 from paper
   
   # Create multplie decrement life tables where 
   # qx_OD is the probability of experiencig child death
@@ -1116,15 +1124,28 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
       # estimates require it
       # Create probability of experiencing child death as
       # nqx = 1 - e^(-h*n)
+      # From the paper: 
+      # In order to determine the prevalence of bereaved women in a 
+      # population, we start by considering the age-specific probability 
+      # that an average woman will experience the death of a child nqx_od:
+      # where h(a,c) = Delta(CD) is the hazard rate of experiencing the death 
+      # of a child younger than k 
       , nqx_od = 1 - exp(-diff)
+      # We create a life table (Preston, Heuveline, and Guillot 2001) with a unit radix
+      # where lx is the probability of losing a child.
+      # We define FOD (lx_scaled) as the fraction of women 
+      # aged a in cohort c who ever experienced the death of a child younger than k. 
+      # Next, we account for the mortality of women with the help of FWS_((a,c))^ , 
+      # the fraction of women that survived up to age a after the start of
+      # reproductive age α in each birth cohort (where α<a). 
+      # We approximate this using country-specific period life tables from the UN WPP. 
       , bereaved_women = (1 - qx2lx(nqx = nqx_od, radix = 1)) * lx_scaled * 1000
-      # , bereaved_women = (1 - qx2lx(nqx = nqx_od, radix = 1)) / lx_scaled * 1000
-      # , bereaved_women2 = bereaved_women * lx_scaled
       # We can say that a group of, say 100 women aged 44-49, 
       # have lost X number of children throughout their life. 
       # Or on average, each woman has lost X/100 children.
       # but only x/(100*share_of_women_are_mothers) mothers
-      # have experienced child death:
+      # have experienced child death.
+      # Eq 4 in paper mOM_((a,c))^k= wOM_((a,c))^k* FM_((a,c,) )
       , bereaved_mothers = bereaved_women / share_of_women_are_mothers
     ) %>% 
     ungroup
@@ -1820,8 +1841,6 @@ worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_
   } else{
     lt_df <- NA
   }
-  
-  
   
   # 2.4. Expected child loss and child survival
   

@@ -83,6 +83,8 @@ write.csv(mOM, "../../Data/estimates/mOM.csv", row.names = F)
 write.csv(mU5M, "../../Data/estimates/mU5M.csv", row.names = F)
 write.csv(mIM, "../../Data/estimates/mIM.csv", row.names = F)
 
+print("7 - mOM, mU5M, and mIM saved as csv files!")
+
 # 5. Export for Emily 
 
 # model_all <- bind_cols(

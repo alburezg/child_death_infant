@@ -13,13 +13,6 @@ print(paste0("Running script: ", "4 - CD_create_df"))
 # 1. Offspring Death (0-100)
 # 2. Infant Deaths (0-4)
 # 3. Adult Deaths (20-100)
-# 4. Child Deaths (4-12)
-# 5. Teenage Deaths (13-19)
-
-
-# with the understanding that 
-# OD = ID + AD + CD + TD
-# which allows us to estimate each of these quantitites
 
 # 0. Parameters ----
 
@@ -53,29 +46,7 @@ od <- child_loss(
 
 # Get regions
 
-od_m <- merge(
-  od
-  , un_reg
-  , by.x = 'country'
-  , by.y = 'level1'
-  , all.x = T
-) %>% 
-  mutate(
-    # Here you chose which regions will be used
-    # (default column defined in script 2_UN_country_grouping.R)
-    region = factor(default_region, levels = regions_long)
-    , cohort2 = paste0("Women born in ", variable)
-    , value = value/1000
-  ) %>% 
-  filter(type %in% allowed_types) %>% 
-  # na values in col region are regions like 'world', central america', etc
-  # and can safely be ignored
-  filter(!is.na(region)) %>% 
-  select(region, type, country, cohort = variable, cohort2, age, value) %>% 
-  arrange(country, cohort, age) %>% 
-  # This last line, essentially removes ages 100 for the 2000 cohort 
-  # which are not available
-  filter(!is.na(value))
+od_m <- get_regions(od, un_reg, regions_long)
 
 saveRDS(od_m, '../../Data/estimates/CD_0_100.RDS')
 
@@ -98,29 +69,7 @@ id <- child_loss(
 
 # Get regions
 
-id_m <- merge(
-  id
-  , un_reg
-  , by.x = 'country'
-  , by.y = 'level1'
-  , all.x = T
-) %>% 
-  mutate(
-    # Here you chose which regions will be used
-    # (default column defined in script 2_UN_country_grouping.R)
-    region = factor(default_region, levels = regions_long)
-    , cohort2 = paste0("Women born in ", variable)
-    , value = value/1000
-  ) %>% 
-  filter(type %in% allowed_types) %>% 
-  # na values in col region are regions like 'world', central america', etc
-  # and can safely be ignored
-  filter(!is.na(region)) %>% 
-  select(region, type, country, cohort = variable, cohort2, age, value) %>% 
-  arrange(country, cohort, age) %>% 
-  # This last line, essentially removes ages 100 for the 2000 cohort 
-  # which are not available
-  filter(!is.na(value))
+id_m <- get_regions(id, un_reg, regions_long)
 
 saveRDS(id_m, '../../Data/estimates/CD_0_1.RDS')
 
@@ -142,33 +91,11 @@ cd <- child_loss(
 
 # Get regions
 
-cd_m <- merge(
-  cd
-  , un_reg
-  , by.x = 'country'
-  , by.y = 'level1'
-  , all.x = T
-) %>% 
-  mutate(
-    # Here you chose which regions will be used
-    # (default column defined in script 2_UN_country_grouping.R)
-    region = factor(default_region, levels = regions_long)
-    , cohort2 = paste0("Women born in ", variable)
-    , value = value/1000
-  ) %>% 
-  filter(type %in% allowed_types) %>% 
-  # na values in col region are regions like 'world', central america', etc
-  # and can safely be ignored
-  filter(!is.na(region)) %>% 
-  select(region, type, country, cohort = variable, cohort2, age, value) %>% 
-  arrange(country, cohort, age) %>% 
-  # This last line, essentially removes ages 100 for the 2000 cohort 
-  # which are not available
-  filter(!is.na(value))
+cd_m <- get_regions(cd, un_reg, regions_long)
 
 saveRDS(cd_m, '../../Data/estimates/CD_0_5.RDS')
 
-# 2.1. Merge ====
+# 4. Merge ----
 
 od_cd <- merge(
   od %>% rename(od = value)
@@ -192,10 +119,19 @@ od_cd_id <- merge(
 
 saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 
- # DEPRECATED 20200206
+
+# DEPRECATED Child and teen deaths ----
+# DEPRECATED 20200206
+# 4. Child Deaths (4-12)
+# 5. Teenage Deaths (13-19)
 # IT DOES RUN BUT I HAVE TO CHECK THE MATH BEHIND IT
 
-# # 3. Adult Deaths (20-100) ----
+# with the understanding that 
+# OD = ID + AD + CD + TD
+# which allows us to estimate each of these quantitites
+
+
+# # 3. Adult Deaths (20-100) 
 # 
 # # This can be estimated as OD - CD_{0-19}
 # 
@@ -212,7 +148,7 @@ saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 #   , max_child_age = 20
 # )
 # 
-# # 3.1. Merge ====
+# # 3.1. Merge 
 # 
 # od_id_ad <- merge(
 #   od_id
@@ -227,7 +163,7 @@ saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 #     ad = od - cd_0_20
 #   )
 # 
-# # 4. Child Deaths (4-12) ----
+# # 4. Child Deaths (4-12) 
 # 
 # # Defined as CD_{0-12} - ID_{0-5}
 # 
@@ -244,7 +180,7 @@ saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 #   , max_child_age = 13
 # )
 # 
-# # 3.1. Merge ====
+# # 3.1. Merge 
 # 
 # od_id_ad_cd <- merge(
 #   od_id_ad
@@ -259,7 +195,7 @@ saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 #     cd = cd_0_13 - id
 #   )
 # 
-# # 5. Teenage Deaths (13-19) ----
+# # 5. Teenage Deaths (13-19) 
 # 
 # # Defined as AD_{0-20} - CD{0-12}
 # 
@@ -268,7 +204,7 @@ saveRDS(od_cd_id, '../../Data/estimates/CD_01_05_0100.RDS')
 #   mutate(td = cd_0_20 - cd_0_13) %>% 
 #   select(country, cohort, age, od, id, ad, cd, td)
 # 
-# # Plot ----
+# # Plot
 # 
 # # cons <- c("niger", "guatemala", "sweden", "malawi")
 # 
