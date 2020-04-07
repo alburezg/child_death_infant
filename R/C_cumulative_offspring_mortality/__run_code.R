@@ -34,21 +34,22 @@ source(files[1])
 
 source(files[2])
 
-# 3. Get estimates for mOM, mU5M, mIM ==== 
+# 3 - difference_model_survey_absolute ====
 
 source(files[3])
 
-# 4. Re-scale estimates using measure of clustering ====
-# STATUS 20200304: makes esteimates worst, if anything
-# you can still run it but this needs to be improved
-# in any case, please!
+# 4.  difference_model_survey_absolute 2016 for all ====
 
-# source(files[4])
+source(files[4])
 
-# 5. Comparisons ====
+# 5 - difference_model_survey_percent ====
 
 source(files[5])
 
 # 6. Check childlesness ====
 
 source(files[6])
+
+# 7. Correlations plots ====
+
+source(files[7])

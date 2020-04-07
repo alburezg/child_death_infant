@@ -90,42 +90,6 @@ source(files[5])
 
 source(files[6])
 
-# 7. Burden of child death ====
-
-# Estimate the total number of child deaths experienced by all women in a region 
-# and birth cohort at each age $a$.
-# We obtain this by multiplying $\Delta CD$ by the absolute number of women expected 
-# to survive to each age, considering the original size of each female birth cohort 
-# and the mortality rates prevalent in their countries of origin.
-# This measure removes the assumption of female survival by accounting for the size 
-# and age structure of the population.
-
-# In practice, for each country/cohort combination, we need:
-#  - First difference of cumulative child loss (ECLC)
-#   This was estimated in previous script
-#  - Number of woman surviving to age a 
-#   This is estimated in this script. 
-
-# More details in script and in the main text (Fig. 3).
+# 7. Get estimates for mOM, mU5M, mIM ==== 
 
 source(files[7])
-
-# B. Child survival ----
-
-# 8.  Child Survival (CS) ====
-
-# Total number of children surviving (CS) for a woman reaching age $a$. 
-# Values in the vertical axis represent the total number of children `currently alive' - 
-# those surviving exposure to the life table mortality function corresponding to their 
-# birth cohorts. 
-# See Eq. 1 and Fig. 2 (C-D) in the main text for more details.  
-
-source(files[8])
-
-# 9. Regional estimates of CS  ====
-
-# Use the country-level estimates produced by the previous script to estimate
-# the levels of child survival at a regional level. Regions are UN SDG regions.
-# Median and different percentiles are estimated.
-
-source(files[9])
