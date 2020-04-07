@@ -110,50 +110,9 @@ source(files[6])
 
 source(files[7])
 
-# 8. Sum of Burden of child death ----
-
-# Global burden of child death. Estimated as the sum of the
-# (non-cumulative) burden of child death over all ages. This
-# measure, considers the size and structure of different birth 
-# cohorts of women to determine the number of child deaths 
-# accumulated by all women in a given birth cohort and region 
-# throughout their lives. 
-
-source(files[8])
-
-# 9. Expected value of Child Death E[CD] ====
-
-# The expected value of Child Death E[CD] is the number of children expected to 
-# die before their mothers, if she survives to the life expectancy in her
-# cohort and country of birth.
-# This is the 'counterpart' of (Fig. 4, panel A). It can be derived from Eq. 2 in 
-# Materials and Methods. See SI Appendix for more details.
-
-# To estimate this, take the cumulative child death (CD) and keep a single value 
-# for each region/mother's birth cohort combination. This value will be the value for which 
-# woman's age is equivalent to the cohort life expectancy at birth of that woman's 
-# region/cohort combination.
-
-source(files[9])
-
-# 10. Children expected to outlive a woman as a fraction of her cohort's TFR ====
-
-# Estimate the fraction of a woman's cohort TFR that will outlive her. 
-# Higher values of SOM indicate that a larger fraction of a woman's offspring is expected 
-# to live longer than her, independently of the prevalent levels of fertility. 
-# It is defined as: FOM = E[CS]/CTFR
-# where E[CS] is the Expected Value of Child Death (see previous script). 
-# The denominator, CTFR, is the cohort total fertility rate for a given country/cohort 
-# combination.
-# This script computes both FOM and FDM (fraction of children died before mothers).
-# FOM and FDM are, in fact, complementary measures to the degree that FOM+FDM = 1
-# for any given country/cohort combination.
-
-source(files[10])
-
 # B. Child survival ----
 
-# 11.  Child Survival (CS) ====
+# 8.  Child Survival (CS) ====
 
 # Total number of children surviving (CS) for a woman reaching age $a$. 
 # Values in the vertical axis represent the total number of children `currently alive' - 
@@ -161,21 +120,12 @@ source(files[10])
 # birth cohorts. 
 # See Eq. 1 and Fig. 2 (C-D) in the main text for more details.  
 
-source(files[11])
+source(files[8])
 
-# 12. Regional estimates of CS  ====
+# 9. Regional estimates of CS  ====
 
 # Use the country-level estimates produced by the previous script to estimate
 # the levels of child survival at a regional level. Regions are UN SDG regions.
 # Median and different percentiles are estimated.
 
-source(files[12])
-
-# 13. Expected value of Child Survival E[CS] ====
-
-# E[CS] is the number of children expected to outlive their mothers
-# This is the number of children who will be alive at the time of a woman's 
-# death if she survives to the life expectancy in her cohort and country of birth.
-# See main text (Fig. 4) and SI Appendix for more details.
-
-source(files[13])
+source(files[9])
