@@ -1,5 +1,5 @@
 
-# 1. Output from analysis for paper "Child death over a woman's life course"
+# 1. Output from analysis for paper "Child death over a woman's life course" ----
 
 # abs_df <- readRDS("../../Data/estimates/abs_df.RDS")
 # FOr all measures
@@ -20,7 +20,7 @@ LTCF <- data.table::fread(file = paste0("../../Data/derived/","LTCF.csv"), strin
 rates <- read.csv("../../Data/wpp_data/WPP2019_Period_Indicators_Medium.csv", stringsAsFactors = F) %>% 
   mutate(iso = countrycode(Location, origin = "country.name", "iso3c", warn = F)) %>% 
   select(iso, period = Time, e0_f = LExFemale, e0_m = LExMale, TFR, IMR, U5MR = Q5)
-  
+
 
 # # Life tables for women and men
 # e0_F <- data.table::fread("../../Data/wpp_data/lt_per_1_1_F.csv", stringsAsFactors = F) %>% 
@@ -41,10 +41,10 @@ rates <- read.csv("../../Data/wpp_data/WPP2019_Period_Indicators_Medium.csv", st
 # surv1 <- read.csv("../../Data/emily/survey_data_20200130.csv", stringsAsFactors = F) 
 
 regions <- read.csv("../../Data/emily/regions.csv", stringsAsFactors = F) 
-  # mutate(
-  #   region = trimws(region)
-  #   , iso = countrycode(country, origin = "country.name", "iso3c", warn = F)) %>% 
-  # select(country, iso, region)
+# mutate(
+#   region = trimws(region)
+#   , iso = countrycode(country, origin = "country.name", "iso3c", warn = F)) %>% 
+# select(country, iso, region)
 
 # write.csv(regions, "../../Data/emily/regions.csv")
 
@@ -52,12 +52,17 @@ countries_order <- read.csv("../../Data/emily/global indicator data_20200206.csv
   # For cote divore
   mutate(country = gsub("C\\?", "Co", country)) %>% 
   pull(country)
-  
-  
 
-# 2. Survey estimates ----
 
-# 2.1. Original estimates ====
+
+# 3. Human Fertility data ----
+
+# Cohort fertiliy
+cch <- read_excel("../../Data/hfd/CCH.xlsx", sheet = "Cohort childlessness", skip = 2)
+
+# 4. Survey estimates ----
+
+# 5. Original estimates ====
 
 # 20200214_women.csv and 20200214_mothers.csv are csv-versions derived from the original
 # 20200214_updated DHS estimates.xlsx file sent by Emily.
@@ -80,7 +85,7 @@ surv <-
   data.frame()
 
 
-# 2.2. Survey est with CI ====
+# 5. Survey est with CI ====
 
 
 # Here, cols named lb95mim and ub95 mum give confidence intervals
@@ -92,3 +97,12 @@ surv_ci <- haven::read_dta("../../Data/emily/globalmaternalestimates.dta")
 
 # surv <- read.csv("../../Data/emily/global indicator data_20200206.csv", stringsAsFactors = F) %>% 
 #   get_regions_iso(., regions)
+
+# 6. Estimates from previous scripts 
+
+
+mOM <- read.csv("../../Data/estimates/mOM.csv", stringsAsFactors = F)
+  
+mU5M <- read.csv("../../Data/estimates/mU5m.csv", stringsAsFactors = F)
+
+mIM <- read.csv("../../Data/estimates/mIM.csv", stringsAsFactors = F)
