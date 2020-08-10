@@ -1,4 +1,7 @@
 
+# DF created in this script can be laoded as:
+# pnas_comp <- read.csv("../../Data/estimates/pnas_recreate.csv", stringsAsFactors = F)
+
 # 0. Parameters ----
 
 # Since this should follow Emily's PNAS paper, restrict to SSA countries she used in that
@@ -74,6 +77,10 @@ pnas_comp <-
   filter(agegr == "[45,50)") %>% 
   select(iso, year, Measure, value = bereaved_mothers) %>% 
   mutate(Source = "KC model")
+
+# Export 
+
+write.csv(pnas_comp, "../../Data/estimates/pnas_recreate.csv", row.names = F)
 
 # Add survey data as points
 
@@ -157,3 +164,4 @@ ggsave(
   , width = 18
   , height = 14
 )
+
