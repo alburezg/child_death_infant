@@ -1,4 +1,7 @@
 
+# Data created in previous script can be loaded as:
+# abs_df <- readRDS("../../Data/estimates/abs_df_all.RDS")
+
 # Theory:
 # From ESG:
 
@@ -31,7 +34,12 @@
 # ESG uses the agr groups 20-44 and 45-49
 # 	For time frame: 2010-2019
 
-years <- 2010:2019
+# years <- 2010:2019
+# Not sure about longest possible time-frame, but function won't
+# break if years are unavaillable, only will return
+# NA for those years. THis seems to work, although 1970 is unavailable
+# for some meausres:
+years <- 2000:2020
 breaks <- c(20, 45, 50)
 reprod_age <- c(15,50)
 

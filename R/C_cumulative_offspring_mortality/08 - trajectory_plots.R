@@ -15,6 +15,7 @@
 # between-country differences 70 yrs ago, today, and 50 yrs from now. 
 
 measure_keep <- "mim20"
+years_keep <- 2000:2020
 
 surv_df <- 
   surv %>% 
@@ -62,30 +63,9 @@ both <-
   left_join(surv_df %>% select(-region), by = c("iso", "year", "measure")) %>% 
   left_join(regions %>% select(iso, region), by = "iso") %>% 
   filter(!is.na(region)) %>% 
-  filter(!grepl("COUNTRIES EXCLUDED", region))
+  filter(!grepl("COUNTRIES EXCLUDED", region)) %>% 
+  filter(year %in% years_keep)
 
-
-# One measure =============
-
-# p_pnas <-
-# Get regions
-both %>% 
-  filter(measure %in% measure_keep) %>% 
-  ggplot(aes(x = year, colour = region, group = iso)) + 
-  geom_line(aes(y = model)) +
-  geom_point(aes(y = survey)) +
-  # facet_wrap( . ~ region, scales = "free")+
-  scale_y_continuous(measure_keep) +
-  theme_bw() +
-  theme(legend.position = "bottom") +
-  ggtitle("")
-
-
-ggsave(
-  "../../Output/trajectories_mim20.pdf"
-  , width = 10
-  , height = 6
-)
 
 # All measures in facet =============
 
@@ -103,13 +83,38 @@ ggsave(
   geom_point(aes(y = survey)) +
   # facet_grid( age ~ mes, scales = "free")+
   facet_grid(age ~ mes) +
+  scale_x_continuous("Calendar year") +
   scale_y_continuous("") +
+  scale_color_discrete("") +
   theme_bw() +
   theme(legend.position = "bottom") +
   ggtitle("")
   
 ggsave(
   "../../Output/trajectories_all.pdf"
-  , width = 10
+  , width = 7
   , height = 6
 )
+
+# DEPRECATED ==========
+
+# # One measure 
+# 
+# # Get regions
+# both %>% 
+#   filter(measure %in% measure_keep) %>% 
+#   ggplot(aes(x = year, colour = region, group = iso)) + 
+#   geom_line(aes(y = model)) +
+#   geom_point(aes(y = survey)) +
+#   # facet_wrap( . ~ region, scales = "free")+
+#   scale_y_continuous(measure_keep) +
+#   theme_bw() +
+#   theme(legend.position = "bottom") +
+#   ggtitle("")
+# 
+# 
+# ggsave(
+#   "../../Output/trajectories_mim20.pdf"
+#   , width = 10
+#   , height = 6
+# )
