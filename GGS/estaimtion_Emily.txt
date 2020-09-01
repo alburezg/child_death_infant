@@ -1,0 +1,4 @@
+Yes, for the two age groups (20-44 and 45-49) very simply generate the proportion who had at least one deceased infant, under five yr old, or child die (out of those who ever gave birth) and express per 1,000. the estimates for DHS were weighted (v005)
+
+here you find the link to more Information on the official ggp Website with a lot of Information to the dataset:
+https://www.ggp-i.org/data/harmonized-histories/
