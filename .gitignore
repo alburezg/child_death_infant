@@ -5,6 +5,7 @@
 # Folders with large datasets
 Data/derived/*.csv
 Data/derived/*.RDS
+Data/GGS
 # For presentation
 presentation/
 #other materials, including full functions
