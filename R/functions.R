@@ -1220,6 +1220,16 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   
 }
 
+# Get regions and countries from ggs data
+get_regions_ggs <- function(df, regions){
+  merge(df, regions, by = "iso") %>% 
+    mutate(
+      region = trimws(region) 
+      # , iso = countrycode(country, origin = "country.name", "iso3c", warn = F)
+    ) %>% 
+    select(iso, region, everything())
+}
+
 # Get regions and countries from emiliy's data
 get_regions_iso <- function(df, regions){
   merge(df, regions, by = "country") %>% 

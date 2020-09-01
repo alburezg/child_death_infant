@@ -1,4 +1,7 @@
 
+# Data created in this script can be loaded as:
+# om_survey <- read.csv("../../Data/GGS/ggs_estimates.csv", stringsAsFactors = F)
+
 # 1. Format data --------------
 
 # 1.0 Formato country names ==============
@@ -167,7 +170,7 @@ cd <-
     , ego_age_years = as.numeric(ego_age_years)
   ) 
 
-# 2.2. Weights ============
+# 2.2. Filter unwanted cuntries ============
 
 # Survey weights are not the same across surveys!!
 
@@ -205,33 +208,28 @@ cd <-
 
 # 3.0 Exploratory ==============
 
-sample <- 
-  cd %>% 
-  dplyr::count(country, name = "sample (mothers)")
-
-
-exposure <- 
-  cd %>% 
-  dplyr::count(country, wt = PERSWGT,  name = "exposure")
-
-enu <-
-  cd %>%
-  group_by(country) %>%
-  summarise(
-    mim = sum(mim)
-    , mum = sum(mu5m)
-    , mom = sum(mom)
-  ) %>%
-  ungroup()
-
-# left_join(sample, enu) %>% 
-#    left_join(exposure)
-
-library(knitr)
-
-kable(left_join(sample, enu) )
-
-# enu$mim/deno$sample * 1000
+# sample <- 
+#   cd %>% 
+#   dplyr::count(country, name = "sample (mothers)")
+# 
+# 
+# exposure <- 
+#   cd %>% 
+#   dplyr::count(country, wt = PERSWGT,  name = "exposure")
+# 
+# enu <-
+#   cd %>%
+#   group_by(country) %>%
+#   summarise(
+#     mim = sum(mim)
+#     , mum = sum(mu5m)
+#     , mom = sum(mom)
+#   ) %>%
+#   ungroup()
+# 
+# library(knitr)
+# 
+# kable(left_join(sample, enu) )
 
 # 3.0.1 No deaths in Norway ==========
 
@@ -306,10 +304,14 @@ mom45 <-
 
 # 3.4. Consolidate ======
 
-om <- 
+om_survey <- 
   bind_rows(mim20, mim45, mum20, mum45, mom45) %>% 
   select(country, variable, value, everything()) %>% 
   arrange(country, variable) %>% 
   left_join(
-    country_df %>% select(country = new, survey_year = year)
-  )
+    country_df %>% select(country = new, year)
+  ) 
+
+# Export
+
+write.csv(om_survey, "../../Data/GGS/ggs_estimates.csv", row.names = F)

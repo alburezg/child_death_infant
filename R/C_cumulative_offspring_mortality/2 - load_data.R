@@ -100,9 +100,31 @@ surv_ci <- haven::read_dta("../../Data/emily/globalmaternalestimates.dta")
 
 # 6. Estimates from previous scripts 
 
-
 mOM <- read.csv("../../Data/estimates/mOM.csv", stringsAsFactors = F)
   
 mU5M <- read.csv("../../Data/estimates/mU5m.csv", stringsAsFactors = F)
 
 mIM <- read.csv("../../Data/estimates/mIM.csv", stringsAsFactors = F)
+
+# 7. From GGS
+
+surv_ggs <- read.csv("../../Data/GGS/ggs_estimates.csv", stringsAsFactors = F)
+
+
+# 8 Complete survey! ==========
+
+# Create a df including ALL survey estiamtes
+surv_ggs_to_merge <-
+  surv_ggs %>% 
+  pivot_wider(names_from = variable, values_from = value) %>% 
+  rename(iso = country) %>% 
+  mutate(measure = "mothers") %>% 
+  get_regions_ggs(., regions)
+
+# Including DHS, MICS, and GGS
+
+survey_with_ggs <- 
+  surv %>% 
+  bind_rows(
+    surv_ggs_to_merge
+  )

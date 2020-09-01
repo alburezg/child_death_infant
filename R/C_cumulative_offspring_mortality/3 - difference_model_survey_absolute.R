@@ -55,7 +55,8 @@ prev_mothers <-
     measure = "mothers"
     , export = T
     , regions = regions
-    , surv_df = surv
+    # , surv_df = surv
+    , surv_df = survey_with_ggs
   )
 
 # merge with weighted estimates
