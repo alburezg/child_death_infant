@@ -312,22 +312,3 @@ om_survey <-
     country_df %>% select(country = new, year)
   ) 
 
-# 4. Export ==============
-
-# Long format, for internal use
-
-write.csv(om_survey, "../../Data/GGS/ggs_estimates.csv", row.names = F)
-
-# 4.1. For Emily (wide) ============
-
-write.csv(
-  om_survey %>% 
-    rename(iso = country) %>% 
-    mutate(
-      country = countrycode(iso, origin = "iso3c", destination = "country.name")
-      ) %>% 
-    pivot_wider(names_from = variable, values_from = value) %>% 
-    select(country, iso, survey_year = year, everything())
-  , "../../Output/_ggs_estimates_wide.csv"
-  , row.names = F
-  )

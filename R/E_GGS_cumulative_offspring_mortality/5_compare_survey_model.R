@@ -3,6 +3,7 @@
 
 countries_final <- unique(om$country)
 
+
 # Prepare survey data ------------
 
 mim20_surv <- 
@@ -44,7 +45,7 @@ om_model <-
   left_join(mum20_surv, by = c("country", "year")) %>% 
   left_join(mum45_surv, by = c("country", "year")) %>% 
   left_join(mom45_surv, by = c("country", "year")) 
-  # pivot_longer(-c(country, year), names_to = "variable", values_to = ) 
+
 
 om_both <- 
   left_join(
@@ -86,3 +87,39 @@ om_both %>%
   theme_bw()
 
 ggsave("../../Output/ggs_comparative.pdf")
+
+# 
+
+# 3. Export csv ==============
+
+# Long format, for internal use
+
+write.csv(om_survey, "../../Data/GGS/ggs_estimates.csv", row.names = F)
+
+# 4.1. For Emily (wide) ============
+
+# write.csv(
+#   om_survey %>% 
+#     rename(iso = country) %>% 
+#     mutate(
+#       country = countrycode(iso, origin = "iso3c", destination = "country.name")
+#     ) %>% 
+#     pivot_wider(names_from = variable, values_from = value) %>% 
+#     select(country, iso, survey_year = year, everything())
+#   , "../../Output/_ggs_estimates_wide.csv"
+#   , row.names = F
+# )
+
+# 4.2. For Emily (with KC estimates) ==============
+
+
+  om_both %>% 
+    rename(iso = country) %>% 
+    mutate(
+      country = countrycode(iso, origin = "iso3c", destination = "country.name")
+    ) %>% 
+    pivot_wider(names_from = variable, values_from = value) %>% 
+    arrange(source, country) %>% 
+    select(source, country, iso, survey_year = year, everything()) %>% 
+    write.csv("../../Output/_ggs_estimates_wide.csv", row.names = F)
+  
