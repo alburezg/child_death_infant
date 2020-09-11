@@ -27,7 +27,6 @@ small <-
   gss %>% 
   filter(COUNTRY %in% country_df$old_num)
   
-
 # recode country labels
 small$country <- country_df$new[match(small$COUNTRY, country_df$old_num)]
 
@@ -66,7 +65,7 @@ small_df <-
     # , ego_age_years = 
   ) %>% 
   # keep only women/mothers
-  filter(SEX == 2) %>% 
+  filter(sex == 2) %>% 
   # Keep only women younger than 49 to make comparable with DHS estimates
   filter(ego_age_years <= max(age_range)) %>% 
   # Keep only mothers
@@ -139,6 +138,8 @@ names(kids_age_death_months) <- paste0("kid_age_death_months", seq_along(kids_ag
 # We sum the number of mothers who had a child die before age 1 among those who ever 
 # had a live birth and express this per 1,000 mothers. 
 
+# First, create a vecotr with each element indicating whether a given woman-row
+# was bereaved or not according to the various definitions used
 mim <- was_mother_bereaved_GGS(kids_age_death_months, max_child_age_months = 1*12)
 mu5m <- was_mother_bereaved_GGS(kids_age_death_months, max_child_age_months = 5*12)
 mom <- was_mother_bereaved_GGS(kids_age_death_months, max_child_age_months = 100*12)
@@ -168,6 +169,9 @@ cd <-
     , mu5m = mu5m
     , mom = mom
     , ego_age_years = as.numeric(ego_age_years)
+    , country = as.character(country)
+    # try to fix austria
+    , PERSWGT = ifelse(country == "AUT", PERSWGT/1000, PERSWGT)
   ) 
 
 # 2.2. Filter unwanted cuntries ============
@@ -180,135 +184,148 @@ cd %>%
     min = min(PERSWGT)
     , max = max(PERSWGT)
     )
+  
 
-# TODO Austria has weird weights ############
+# ? TODO Austria has weird weights ############
 # Excluded for now, but figure up what's up
 
 # small %>% 
 #   dplyr::count(country, KID_D1) %>% 
 #   data.frame()
 
-print("Removing AUT and NOR")
+print("Removing NOR")
 
 
 cd <- 
   cd %>% 
   # Austria has weird weights
-  filter(country != "AUT") %>% 
+  # filter(country != "AUT") %>% 
   # Norway does not report child deaths
   filter(country != "NOR")
-
-# Create survey object
-
-# cd <- 
-#   cd_temp %>% 
-#   as_survey(weights = PERSWGT)
 
 # 3. Get country-level estimates -----------
 
 # 3.0 Exploratory ==============
 
-# sample <- 
-#   cd %>% 
-#   dplyr::count(country, name = "sample (mothers)")
-# 
-# 
-# exposure <- 
-#   cd %>% 
-#   dplyr::count(country, wt = PERSWGT,  name = "exposure")
-# 
-# enu <-
-#   cd %>%
-#   group_by(country) %>%
-#   summarise(
-#     mim = sum(mim)
-#     , mum = sum(mu5m)
-#     , mom = sum(mom)
-#   ) %>%
-#   ungroup()
-# 
-# library(knitr)
-# 
-# kable(left_join(sample, enu) )
-
-# 3.0.1 No deaths in Norway ==========
+sample <-
+  cd %>%
+  dplyr::count(country, name = "sample (mothers)")
 
 
-  
+exposure <-
+  cd %>%
+  dplyr::count(country, wt = PERSWGT,  name = "exposure")
 
-# 3.1  mim =================
+enu <-
+  cd %>%
+  group_by(country) %>%
+  summarise(
+    mim = sum(mim)
+    , mum = sum(mu5m)
+    , mom = sum(mom)
+  ) %>%
+  ungroup()
 
-mim20 <- 
-  cd %>% 
-  filter(between(ego_age_years, 20,44)) %>% 
-  group_by(country) %>% 
-  summarize(
-    value = weighted.mean(mim, w = PERSWGT)
-    ) %>% 
-  mutate(
-    value = value * 1000
-    , variable = "mim20"
-  )
+library(knitr)
 
-mim45 <- 
-  cd %>% 
-  filter(between(ego_age_years, 45,49)) %>% 
-  group_by(country) %>% 
-  summarize(
-    value = weighted.mean(mim, w = PERSWGT)
-  ) %>% 
-  mutate(
-    value = value * 1000
-    , variable = "mim45"
-  )
+kable(left_join(sample, enu) )
 
-# 3.2  mu5m =================
 
-mum20 <- 
-  cd %>% 
-  filter(between(ego_age_years, 20,44)) %>% 
-  group_by(country) %>% 
-  summarize(
-    value = weighted.mean(mu5m, w = PERSWGT)
-  ) %>% 
-  mutate(
-    value = value * 1000
-    , variable = "mum20"
-  )
-
-mum45 <- 
-  cd %>% 
-  filter(between(ego_age_years, 45,49)) %>% 
-  group_by(country) %>% 
-  summarize(
-    value = weighted.mean(mu5m, w = PERSWGT)
-  ) %>% 
-  mutate(
-    value = value * 1000
-    , variable = "mum45"
-  )
-
-# 3.3  mom =================
-
-mom45 <- 
-  cd %>% 
-  filter(between(ego_age_years, 45,49)) %>% 
-  group_by(country) %>% 
-  summarize(
-    value = weighted.mean(mom, w = PERSWGT)
-  ) %>% 
-  mutate(
-    value = value * 1000
-    , variable = "mom45"
-  )
-
-# 3.4. Consolidate ======
+# 3.1. Get mean and CI -----------
 
 om_survey <- 
-  bind_rows(mim20, mim45, mum20, mum45, mom45) %>% 
-  select(country, variable, value, everything()) %>% 
-  arrange(country, variable) %>% 
+  get_ci_by_country_GGS(cd, level = 0.95) %>%
+  # get survey yeares
   left_join(
-    country_df %>% select(country = new, year)
-  ) 
+    country_df %>% 
+      select(country = new, year) %>% 
+      mutate(country = as.character(country)) 
+  ) %>% 
+  select(country, year, variable, everything()) %>% 
+  arrange(country, variable) 
 
+# om_survey99ci
+
+# DEPCREACATED --------
+
+# ~~~~~~~~~~~~~~~~~
+# WORKING CODE
+# ~~~~~~~~~~~~~
+
+# get weighted means without survey package
+
+# 3.1  mim 
+
+# mim20 <- 
+#   cd %>% 
+#   filter(between(ego_age_years, 20,44)) %>% 
+#   group_by(country) %>% 
+#   summarize(
+#     value = weighted.mean(mim, w = PERSWGT)
+#   ) %>% 
+#   mutate(
+#     value = value * 1000
+#     , variable = "mim20"
+#   )
+# 
+# mim45 <- 
+#   cd %>% 
+#   filter(between(ego_age_years, 45,49)) %>% 
+#   group_by(country) %>% 
+#   summarize(
+#     value = weighted.mean(mim, w = PERSWGT)
+#   ) %>% 
+#   mutate(
+#     value = value * 1000
+#     , variable = "mim45"
+#   )
+# 
+# # 3.2  mu5m 
+# 
+# mum20 <- 
+#   cd %>% 
+#   filter(between(ego_age_years, 20,44)) %>% 
+#   group_by(country) %>% 
+#   summarize(
+#     value = weighted.mean(mu5m, w = PERSWGT)
+#   ) %>% 
+#   mutate(
+#     value = value * 1000
+#     , variable = "mum20"
+#   )
+# 
+# mum45 <- 
+#   cd %>% 
+#   filter(between(ego_age_years, 45,49)) %>% 
+#   group_by(country) %>% 
+#   summarize(
+#     value = weighted.mean(mu5m, w = PERSWGT)
+#   ) %>% 
+#   mutate(
+#     value = value * 1000
+#     , variable = "mum45"
+#   )
+# 
+# # 3.3  mom 
+# 
+# mom45 <- 
+#   cd %>% 
+#   filter(between(ego_age_years, 45,49)) %>% 
+#   group_by(country) %>% 
+#   summarize(
+#     value = weighted.mean(mom, w = PERSWGT)
+#   ) %>% 
+#   mutate(
+#     value = value * 1000
+#     , variable = "mom45"
+#   )
+# 
+# # 3.4. Consolidate 
+# 
+# om_survey <- 
+#   bind_rows(mim20, mim45, mum20, mum45, mom45) %>% 
+#   select(country, variable, value, everything()) %>% 
+#   arrange(country, variable) %>% 
+#   left_join(
+#     country_df %>% select(country = new, year)
+#   ) 

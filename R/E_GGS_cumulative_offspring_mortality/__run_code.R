@@ -35,7 +35,7 @@ source(files[1])
 
 source(files[2])
 
-# 3 - difference_model_survey_absolute ====
+# 3 - parameteres ====
 
 source(files[3])
 

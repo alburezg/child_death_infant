@@ -958,7 +958,74 @@ format_table <- function(df, row_keep = 29, ages = c(20,45,100), cohorts = c(195
   return(df)  
   
 }
+# Given a df called cd, estimate the weighted mean and 95% CI
+# for each measure separately
+# Returs a df
+get_ci_by_country_GGS <- function(cd, level = 0.95){
+  
+  # Create specific dfs-lists for each meaure
+  
+  country_meaure_l <- 
+    c(
+      cd %>% 
+        filter(between(ego_age_years, 20,44)) %>% 
+        select(country, PERSWGT, value = mim) %>% 
+        mutate(variable = "mim20") %>% 
+        split(., .$country)
+      , cd %>% 
+        filter(between(ego_age_years, 45,49)) %>% 
+        select(country, PERSWGT, value = mim) %>% 
+        mutate(variable = "mim45") %>% 
+        split(., .$country)
+      ,  cd %>% 
+        filter(between(ego_age_years, 20,44)) %>% 
+        select(country, PERSWGT, value = mu5m)%>% 
+        mutate(variable = "mum20") %>% 
+        split(., .$country)
+      , cd %>% 
+        filter(between(ego_age_years, 45,49)) %>% 
+        select(country, PERSWGT, value = mu5m)%>% 
+        mutate(variable = "mum45") %>% 
+        split(., .$country)
+      , cd %>% 
+        filter(between(ego_age_years, 45,49)) %>% 
+        select(country, PERSWGT, value = mom) %>% 
+        mutate(variable = "mom45") %>% 
+        split(., .$country)
+    )
+  
+  
+  # One survdesign obj per country-measure df
+  out <- 
+    lapply(country_meaure_l, function(df, level) {
+      # Create survey object
+      # https://r-survey.r-forge.r-project.org/survey/survey-wss-2010.pdf
+      design <- svydesign(~0, weights = df$PERSWGT, data = df)
+      m <- svymean(~value, design)
+      ci <- confint(m, level = level)
+      # For export
+      # For TRUE category
+      m_out <- unname(m[2])
+      # these are for the TRUE category, which is the one we
+      # are interested in
+      ci_out <- unname(ci[c(2,4)])
+      data.frame(
+        country = unique(df$country)
+        , variable = unique(df$variable)
+        , mean = m_out * 1000
+        , ci_low = ci_out[1] * 1000
+        , ci_high = ci_out[2] * 1000
+        , stringsAsFactors = F
+      )
+    }, level) %>% 
+    bind_rows()
+  
+}
 
+# Convert to DHS century month code
+get_cmc <- function(y,m){
+  ((y - 1900)*12) + m
+}
 
 # Creates list with two df of the first difference
 # of child death (country- and regional level)
@@ -1795,6 +1862,24 @@ survival_probs_parallel <- function(l, xs, mas, cos, numCores = 4) {
   stopCluster(cl)  
   
   print("Done! This function returns no object since save_output == T")
+  
+}
+
+# Proportion who had at least one deceased infant, under five yr old, 
+# or child die (out of those who ever gave birth)
+# using GGS harmonized df 
+was_mother_bereaved_GGS <- function(kids_age_death_months, max_child_age_months){
+  
+  # row_aut <- kids_age_death_months[ small_df$country == "AUT",]
+  # row_bereaved <- row_aut[!is.na(row_aut$kid_death_cmc1), ]
+  # row <- row_bereaved[3 , ]
+  
+  apply(kids_age_death_months, 1, function(row, max_child_age_months){
+    
+    r <- unlist(row)
+    number_deaths <- sum(!is.na(r[r <= max_child_age_months]))
+    return(number_deaths > 0)
+  }, max_child_age_months)
   
 }
 
