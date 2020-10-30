@@ -217,7 +217,8 @@ compare_measures <- function(year_for_missing_countries = 2016, surv_measure_kee
   # but present in model estimates
   
   # Keep rlevant countries
-  reg <- regions %>% filter(!grepl('COUNTRIES EXCLUDED', region) ) 
+  reg <- regions 
+    # filter(!grepl('COUNTRIES EXCLUDED', region) ) 
   
   missing_iso <- reg$iso[! reg$iso %in% joint_survey_model$iso]
   
@@ -408,20 +409,24 @@ compare_measures_bulk <- function(measure, export, regions, add_indirect_estimat
       prevalence %>% 
       select(iso, level, model) %>% 
       mutate(level = plyr::mapvalues(level, old, new)) %>% 
-      tidyr::spread(., level, model) %>% 
+      # pivot_wider(-iso, names_from = "level", values_from = "model")
+      tidyr::spread(., level, model) %>%
       merge(
         .
-        , regions %>% filter(!grepl('COUNTRIES EXCLUDED', region)) %>% select(iso, country)
+        , regions %>% 
+          # filter(!grepl('COUNTRIES EXCLUDED', region)) %>% 
+          select(iso, country)
         , by = c("iso")
         # , all.x = F
         # , all.y = T
       ) %>% 
       select(-iso) %>%
-      select(country, everything()) 
+      select(country, everything()) %>% 
+      arrange(country)
     
     # Order accoring to original excel
-    prev_wide <- prev_wide[match(countries_order, prev_wide$country), ] %>% 
-      na.omit()
+    # prev_wide <- prev_wide[match(countries_order, prev_wide$country), ] %>% 
+    #   na.omit()
     
     file_name <- paste0("../../Output/_kin_cohort_estimates_",measure , name_export, ".csv")
     

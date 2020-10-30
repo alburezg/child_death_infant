@@ -38,7 +38,8 @@ both <-
 
 # country_keep <- unique(wpp_kc$iso)[5:8]
 # country_keep <- sample(unique(wpp_kc$iso), 3)
-country_keep <- c("SWE","USA", "GTM", "ZAF")
+# country_keep <- c("SWE","USA", "GTM", "ZAF")
+country_keep <- c("KOR","JPN")
 
 both %>% 
   filter(iso %in% country_keep) %>% 

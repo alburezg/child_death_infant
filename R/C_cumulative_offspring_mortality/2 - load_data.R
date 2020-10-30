@@ -100,11 +100,14 @@ surv_ci <- haven::read_dta("../../Data/emily/globalmaternalestimates.dta")
 
 # 6. Estimates from previous scripts 
 
-mOM <- read.csv("../../Data/estimates/mOM.csv", stringsAsFactors = F)
+mOM <- read.csv("../../Data/estimates/mOM.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
   
-mU5M <- read.csv("../../Data/estimates/mU5m.csv", stringsAsFactors = F)
+mU5M <- read.csv("../../Data/estimates/mU5m.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
 
-mIM <- read.csv("../../Data/estimates/mIM.csv", stringsAsFactors = F)
+mIM <- read.csv("../../Data/estimates/mIM.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
 
 # 7. From GGS
 
@@ -116,7 +119,7 @@ surv_ggs <- read.csv("../../Data/GGS/ggs_estimates.csv", stringsAsFactors = F)
 # Create a df including ALL survey estiamtes
 surv_ggs_to_merge <-
   surv_ggs %>% 
-  pivot_wider(names_from = variable, values_from = value) %>% 
+  pivot_wider(names_from = variable, values_from = mean) %>% 
   rename(iso = country) %>% 
   mutate(measure = "mothers") %>% 
   get_regions_ggs(., regions)

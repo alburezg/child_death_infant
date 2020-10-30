@@ -10,7 +10,8 @@
 base_size <- 15
 point_size <- 4
 
-reg_exclude <- "COUNTRIES EXCLUDED (islands/very small territories/populations)"
+# reg_exclude <- "COUNTRIES EXCLUDED (islands/very small territories/populations)"
+reg_exclude <- ""
 
 # In casses where no specific year is indicated in Emily's data
 # and for indirect estimations
@@ -55,8 +56,8 @@ prev_mothers <-
     measure = "mothers"
     , export = T
     , regions = regions
-    # , surv_df = surv
-    , surv_df = survey_with_ggs
+    , surv_df = surv
+    # , surv_df = survey_with_ggs
   )
 
 # merge with weighted estimates
