@@ -119,7 +119,7 @@ surv_ggs <- read.csv("../../Data/GGS/ggs_estimates.csv", stringsAsFactors = F)
 # Create a df including ALL survey estiamtes
 surv_ggs_to_merge <-
   surv_ggs %>% 
-  pivot_wider(names_from = variable, values_from = mean) %>% 
+  pivot_wider(names_from = variable, values_from = value) %>% 
   rename(iso = country) %>% 
   mutate(measure = "mothers") %>% 
   get_regions_ggs(., regions)

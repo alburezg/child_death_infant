@@ -1,6 +1,6 @@
 
 # DF created in this script can be laoded as:
-pnas_comp <- read.csv("../../Data/estimates/pnas_recreate.csv", stringsAsFactors = F)
+# pnas_comp <- read.csv("../../Data/estimates/pnas_recreate.csv", stringsAsFactors = F)
 
 # 0. Parameters ----
 
@@ -26,63 +26,61 @@ reprod_age <- c(15,50)
 
 years_plot <- 1984:2020
 
-if(!exists("pnas_comp")){
-  # 1. mOM ~~~~ ----
-  
-  mOM_pnas <- offspring_death_prevalence(
-    k_value = "0_100" # age ranges for child death
-    , file_name = NA # For exporting
-    , years = years
-    , breaks = breaks
-    , reprod_age = reprod_age
-    , abs_df_all
-    , ASFRC
-    , LTCF 
-  )
-  
-  # 2 mU5M ~~~~ ----
-  
-  mU5M_pnas <- offspring_death_prevalence(
-    k_value = "0_5" # age ranges for child death
-    # , file_name = "mU5M" # For exporting
-    , file_name = NA # For exporting
-    , years = years
-    , breaks = breaks
-    , reprod_age = reprod_age
-    , abs_df_all
-    , ASFRC
-    , LTCF 
-  )
-  
-  # 3. mIM ~~~~ ----
-  
-  mIM_pnas <- offspring_death_prevalence(
-    k_value = "0_1" # age ranges for child death
-    # , file_name = "mIM" # For exporting
-    , file_name = NA # For exporting
-    , years = years
-    , breaks = breaks
-    , reprod_age = reprod_age
-    , abs_df_all
-    , ASFRC
-    , LTCF 
-  )
-  
-  
-  pnas_comp <- 
-    bind_rows(
-      mOM_pnas %>% mutate(Measure = "mOM")
-      , mU5M_pnas %>% mutate(Measure = "mu5M")
-      , mIM_pnas %>% mutate(Measure = "mIM")
-    ) %>% 
-    filter(agegr == "[45,50)") %>% 
-    select(iso, year, Measure, value = bereaved_mothers) %>% 
-    mutate(Source = "KC model")
-  
-  # Export 
-  
-  write.csv(pnas_comp, "../../Data/estimates/pnas_recreate.csv", row.names = F)
-}
+# 1. mOM ~~~~ ----
+
+mOM_pnas <- offspring_death_prevalence(
+  k_value = "0_100" # age ranges for child death
+  , file_name = NA # For exporting
+  , years = years
+  , breaks = breaks
+  , reprod_age = reprod_age
+  , abs_df_all
+  , ASFRC
+  , LTCF 
+)
+
+# 2 mU5M ~~~~ ----
+
+mU5M_pnas <- offspring_death_prevalence(
+  k_value = "0_5" # age ranges for child death
+  # , file_name = "mU5M" # For exporting
+  , file_name = NA # For exporting
+  , years = years
+  , breaks = breaks
+  , reprod_age = reprod_age
+  , abs_df_all
+  , ASFRC
+  , LTCF 
+)
+
+# 3. mIM ~~~~ ----
+
+mIM_pnas <- offspring_death_prevalence(
+  k_value = "0_1" # age ranges for child death
+  # , file_name = "mIM" # For exporting
+  , file_name = NA # For exporting
+  , years = years
+  , breaks = breaks
+  , reprod_age = reprod_age
+  , abs_df_all
+  , ASFRC
+  , LTCF 
+)
+
+
+pnas_comp <- 
+  bind_rows(
+    mOM_pnas %>% mutate(Measure = "mOM")
+    , mU5M_pnas %>% mutate(Measure = "mu5M")
+    , mIM_pnas %>% mutate(Measure = "mIM")
+  ) %>% 
+  filter(agegr == "[45,50)") %>% 
+  select(iso, year, Measure, value = bereaved_mothers) %>% 
+  mutate(Source = "KC model")
+
+# Export 
+
+write.csv(pnas_comp, "../../Data/estimates/pnas_recreate.csv", row.names = F)
 
 # Add survey data as points
 
@@ -167,38 +165,3 @@ ggsave(
   , height = 14
 )
 
-
-# 3. Plot to validate child death -------------
-
-iso_keep <- iso_keep[!iso_keep %in% c("MDG", "CIV", "MLI", "BEN")]
-
-surv_mod <- 
-  pnas_comp %>% 
-  rename(model = value) %>% 
-  select(-Source) %>% 
-  mutate(Measure = as.character(Measure)) %>% 
-  left_join(
-    surv_pnas %>% 
-      rename(survey = value) %>% 
-      select(-Source) %>% 
-      mutate(Measure = as.character(Measure))
-    ) %>% 
-  filter(iso %in% iso_keep) %>% 
-  mutate(country = countrycode(iso, origin = "iso3c", destination = "country.name"))
-
-
-surv_mod %>% 
-  filter(year %in% 2000:2020) %>% 
-  filter(Measure == "mOM") %>% 
-  ggplot() + 
-  geom_line(aes(x = year, y = model), size = 1) +
-  geom_point(aes(x = year, y = survey), size = 2) +
-  scale_x_continuous("Calendar year", breaks = scales::pretty_breaks(n=3)) +
-  scale_y_continuous("Mothers ever experienced the death of an offspring (per 1000)") +
-  facet_wrap( . ~ country)+
-  theme_bw() +
-  coord_cartesian(ylim = c(0, 1000)) +
-  theme(legend.position = "bottom") +
-  ggtitle("")
-
-ggsave("../../Output/pnas_comparative_mOM.pdf")

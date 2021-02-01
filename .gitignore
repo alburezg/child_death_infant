@@ -5,6 +5,8 @@
 # Folders with large datasets
 Data/derived/*.csv
 Data/derived/*.RDS
+Data/wpp_data
+Data/estimates/bereavement_life_tables.csv
 Data/GGS
 # For presentation
 presentation/

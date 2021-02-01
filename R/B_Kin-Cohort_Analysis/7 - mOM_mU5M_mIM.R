@@ -1,6 +1,10 @@
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Data requirements: 
 # Data created in previous script can be loaded as:
 # abs_df <- readRDS("../../Data/estimates/abs_df_all.RDS")
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Theory:
 # From ESG:
