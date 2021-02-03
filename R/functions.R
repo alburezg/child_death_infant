@@ -1104,7 +1104,7 @@ get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../
 
 # Create measures equivalent to Emily's 
 # Comments inside explai nmore and see paper
-offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF){
+offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF, method = "mid-interval"){
   
   # 1. From women to mothers
   
@@ -1269,27 +1269,96 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   old <- unique(cd_p$country)
   new <- countrycode(old, origin = "country.name", "iso3c", warn = F)
   
-  output <- 
-    cd_p %>% 
-    mutate( agegr = cut(age, breaks, right = F)  ) %>% 
-    filter(!is.na(agegr)) %>% 
-    group_by(country, year, agegr) %>% 
-    summarise(
-      # Option 1, take mean
-      # bereaved_women = mean(bereaved_women)
-      # , bereaved_mothers = mean(bereaved_mothers)
-      # Option 2, take mid-interval value
-      bereaved_women = nth(bereaved_women, n = floor(n()/2))
-      , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
-    ) %>% 
-    ungroup %>% 
-    mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>% 
-    select(iso, everything())
+  # rcode sldf44t
+  print(paste("Warning: using this method to group values by ages:", method))
+  
+  
+  if(method == "mean"){
+    output <-
+      cd_p %>%
+      mutate( agegr = cut(age, breaks, right = F)  ) %>%
+      filter(!is.na(agegr)) %>%
+      group_by(country, year, agegr) %>%
+      summarise(
+        # Option 1, take mean
+        bereaved_women = mean(bereaved_women)
+        , bereaved_mothers = mean(bereaved_mothers)
+      ) %>%
+      ungroup %>%
+      mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>%
+      select(iso, everything())
+  } else if(method == "mid-interval"){
+    output <-
+      cd_p %>%
+      mutate( agegr = cut(age, breaks, right = F)  ) %>%
+      filter(!is.na(agegr)) %>%
+      group_by(country, year, agegr) %>%
+      summarise(
+        # Option 2, take mid-interval value
+        bereaved_women = nth(bereaved_women, n = floor(n()/2))
+        , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
+      ) %>%
+      ungroup %>%
+      mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>%
+      select(iso, everything())
+  }
+  
+  # OLD CODE (alwasy taking mid-interval)
+  # output <- 
+  #   cd_p %>% 
+  #   mutate( agegr = cut(age, breaks, right = F)  ) %>% 
+  #   filter(!is.na(agegr)) %>% 
+  #   group_by(country, year, agegr) %>% 
+  #   summarise(
+  #     # Option 1, take mean
+  #     # bereaved_women = mean(bereaved_women)
+  #     # , bereaved_mothers = mean(bereaved_mothers)
+  #     # Option 2, take mid-interval value
+  #     bereaved_women = nth(bereaved_women, n = floor(n()/2))
+  #     , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
+  #   ) %>% 
+  #   ungroup %>% 
+  #   mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>% 
+  #   select(iso, everything())
   
   # 5. Export df 
   if(!is.na(file_name)) write.csv(output, paste0("../../Output/",file_name,".csv"), row.names = F)
   
   return(output)  
+  
+}
+
+# Reconstructed on 20210203 because the original had been lost
+# but I think this shoud work
+# The only issue is that the 'values' seem to be different
+# because in the original one they were divided by 1000
+# but I don't think this is something I should do in this script
+get_regions <- function(df, regions, regions_long){
+  
+  # Save un objects in gobal envir
+  # format_UN_country_grouping(un_regions)
+  
+  # out <- 
+  df %>% 
+    left_join(
+      regions %>% 
+        select(type, country = level1, region = starts_with("default_region"))
+      , by = c('country')
+    ) %>% 
+    mutate(
+      # Here you chose which regions will be used
+      # (default column defined in script 2_UN_country_grouping.R)
+      region = factor(region, levels = regions_long)
+      # level2 = factor(un_sdg_groups, levels = old_sdg)
+      , cohort2 = paste0("Women born in ", variable)
+    ) %>% 
+    filter(type %in% "country") %>% 
+    # na values in col region are regions like 'world', central america', etc
+    # and can safely be ignored
+    filter(!is.na(region)) %>% 
+    select(region, type, country, cohort = variable, cohort2, age, value)
+  
+  # return(out)
   
 }
 
@@ -2204,7 +2273,7 @@ compare_measures_bulk_5y <- function(measure, export, regions,  surv_df, name_ex
   mes <- c("mom", "mum", "mim")
   surv_measure_keep_all_n <- paste0(rep(mes, length(ages)), ages)
   model_agegr_keep_all_n <- rep(paste0("[",ages, ",",ages+5,")"), length(mes))
-  ages_pretty_n <- rep(paste0(ages, "-", ages + 5), length(mes))
+  ages_pretty_n <- rep(paste0(ages, "-", ages + 4), length(mes))
   # ages_low_n <- rep(ages, length(mes))
   
   temp <- 

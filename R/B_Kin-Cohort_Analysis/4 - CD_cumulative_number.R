@@ -46,7 +46,9 @@ od <- child_loss(
 
 # Get regions
 
-od_m <- get_regions(od, un_reg, regions_long)
+od_m <- 
+  get_regions(od, un_reg, regions_long) %>% 
+  mutate(value = value /1000)
 
 saveRDS(od_m, '../../Data/estimates/CD_0_100.RDS')
 
@@ -69,7 +71,8 @@ id <- child_loss(
 
 # Get regions
 
-id_m <- get_regions(id, un_reg, regions_long)
+id_m <- get_regions(id, un_reg, regions_long) %>% 
+  mutate(value = value /1000)
 
 saveRDS(id_m, '../../Data/estimates/CD_0_1.RDS')
 
@@ -91,7 +94,8 @@ cd <- child_loss(
 
 # Get regions
 
-cd_m <- get_regions(cd, un_reg, regions_long)
+cd_m <- get_regions(cd, un_reg, regions_long) %>% 
+  mutate(value = value /1000)
 
 saveRDS(cd_m, '../../Data/estimates/CD_0_5.RDS')
 

@@ -44,9 +44,11 @@
 # NA for those years. THis seems to work, although 1970 is unavailable
 # for some meausres:
 years <- 2000:2020
-# breaks <- c(20, 45, 50)
 breaks <- seq(15, 50, 5)
 reprod_age <- c(15,50)
+
+method <- "mid-interval"
+# method <- "mean"
 
 # 1. mOM ~~~~ ----
 
@@ -60,6 +62,7 @@ mOM_5y <- offspring_death_prevalence(
   , abs_df_all = abs_df
   , ASFRC
   , LTCF 
+  , method = method
 )
 
 # 2 mU5M ~~~~ ----
@@ -74,6 +77,7 @@ mU5M_5y <- offspring_death_prevalence(
   , abs_df_all = abs_df
   , ASFRC
   , LTCF 
+  , method = method
 )
 
 # 3. mIM ~~~~ ----
@@ -88,6 +92,7 @@ mIM_5y <- offspring_death_prevalence(
   , abs_df_all = abs_df
   , ASFRC
   , LTCF 
+  , method = method
 )
 
 # 4. Export ====

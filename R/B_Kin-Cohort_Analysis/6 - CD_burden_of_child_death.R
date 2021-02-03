@@ -18,7 +18,7 @@ print(paste0("Running script: ", "7 - CD_asbolute_by_ex"))
 # Data requirements: 
 # The list of delta CD created in the previous script can be loaded with
 # l_diff <- readRDS("../../Data/estimates/l_diff.RDS")
-# lx_df <- read.csv("../../Data/estimates/lx_df.csv", stringsAsFactors = F)
+lx_df <- read.csv("../../Data/estimates/lx_df.csv", stringsAsFactors = F)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 1. Absolute child loss by age ----
