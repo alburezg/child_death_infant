@@ -6,7 +6,7 @@
 # gatemonte@gmail.com         #
 # @d_alburez                  #
 # unless stated otherwise.    #
-# Last edited 20200110        #
+# Last edited 20210210        #
 # GNU GENERAL PUBLIC LICENSE  #
 # Version 3, 29 June 2007     #
 # *~^**~^**~^**~^**~^**~^**~^*#
@@ -14,38 +14,12 @@
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Code to produce estimates of Child Death, Child Survival, and derived measures
-# described in the main text and in the SI Appendix.
-# Make sure that all scripts in the directory `A_Data_formatting` have been run before
-# attempting to run these scripts - otherwise they won't work.
-# The scripts in this directory carry out the analysis of the data but do not produce
-# any of the tables or figures included in the paper. 
-# These are produced by a separate set of scripts in the directory `C_Results`.
-# Scripts in this directory do the following: 
-# 
-#    1. Load the functions and packages needed in the scripts 
-#    2. Load the data needed for the analysis 
-#    3. Load data about country grouping and format them for the analysis  
-# A. Child Death
-#    4. Estimate the cumulative number of child deaths for a woman reaching age a (CD) 
-#    5. Regional estimates of CD  
-#    6. First difference of Child Death (Delta CD) 
-#    7. Burden of child death 
-#    8. Sum of burden of child death 
-#    9. Expected value of Child Death E[CD] 
-#    10. Children expected to outlive a woman as a fraction of her cohort's TFR 
-# B. Child survival 
-#    11.  Child Survival (CS) 
-#    12. Regional estimates of CS  
-#    13. Expected value of Child Survival E[CS] 
+# Code to produce estimates of the prevalence of offspring death
+# by children age at death (mOM, mIM, mU5M) for the paper
+# The Global Burden of Maternal Bereavement:
+# Indicators of the Cumulative Prevalence of Child Loss
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-if(!require("stringr")) {
-  install.packages("stringr")
-  library(stringr)
-} 
 
 files <- list.files(pattern = ".R$")[-1]
 ( files <- stringr::str_sort(files, numeric = TRUE) )
@@ -93,3 +67,7 @@ source(files[6])
 # 7. Get estimates for mOM, mU5M, mIM ==== 
 
 source(files[7])
+
+# 8. Get estimates for mOM, mU5M, mIM by 5-year age groups ==== 
+
+source(files[8])

@@ -2,32 +2,32 @@ print(paste0("Running script: ", "7 - CD_asbolute_by_ex"))
 
 # Estimate the total number of child deaths experienced by all women in a region 
 # and birth cohort at each age $a$.
-# We obtain this by multiplying $\Delta CD$ by the absolute number of women expected 
+# We obtain this by multiplying $\Delta CD$ (the first difference of child death) 
+# by the absolute number of women expected 
 # to survive to each age, considering the original size of each female birth cohort 
 # and the mortality rates prevalent in their countries of origin.
 # This measure removes the assumption of female survival by accounting for the size 
 # and age structure of the population.
 
 # In practice, for each country/cohort combination, we need:
-#  - First difference of cumulative child loss (ECLC)
+#  - First difference of cumulative child loss 
 #   This was estimated in previous script
 #  - Number of woman surviving to age a 
 #   This is estimated in this script. 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Data requirements: 
-# The list of delta CD created in the previous script can be loaded with
-# l_diff <- readRDS("../../Data/estimates/l_diff.RDS")
+# Data requirements:
+# First difference of child death:
+l_diff <- readRDS("../../Data/estimates/l_diff.RDS")
+# Objects created in this script: 
+# lx_df is a df with the number of women surviving up to age 100 for specific
+# birth cohort-country cobminations
+# This takes a long time to run, so it's easier just to load
+# it from the start. However, you can still estimate again below
 lx_df <- read.csv("../../Data/estimates/lx_df.csv", stringsAsFactors = F)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 1. Absolute child loss by age ----
-
-# For every country, we need:
-# Enumerator: first difference of cumulative child loss (ECLC)
-#   This was estimated in previous script
-# Denominator: number of woman surviving to age a 
-#   This will be estimated below
 
 # 1.1. Radix by birth cohort (denominator) ====
 
@@ -36,13 +36,11 @@ lx_df <- read.csv("../../Data/estimates/lx_df.csv", stringsAsFactors = F)
 # Therefore, I need to apply the specific female cohort life table for the
 # respective population of women by birth cohort and country/region
 
-# Since these are real numbers, I need to get the size of the female 
+# Since these are empirical numbers, I need to get the size of the female 
 # birth cohorts by country and year
 # This can be obtained from the WPP estimates of the yearly number of births
-# Note that this value is grouped and was ungrouped in another script
-# cf WPP_ungroup_age_year
 
-# The function below applies cohort life tables to real-life populatinos
+# The function below applies (pssuedo) cohort life tables to real-life populatinos
 # with the intention of gettin the lx column
 # where radices are the initial size of birth cohorts 
 # of women using wpp data
@@ -52,9 +50,8 @@ lx_df <- read.csv("../../Data/estimates/lx_df.csv", stringsAsFactors = F)
 # Put differently, it is the number of woman at risk of losing a child
 # ie the denominator for the absolute measure of child loss
 
-# This takes around 10min to run parallelised
+# This takes around 10min to run parallelised on 10 cores
 
-# Otherwise it can also be estimated again
 if(!exists("lx_df")) {
   
   numCores <- ifelse(detectCores() > 8, 25, detectCores() - 1)
@@ -71,7 +68,7 @@ if(!exists("lx_df")) {
 
 # 1.2. Total yearly child deaths ====
 
-# First, merge all dfs into a lisgle one
+# First, merge all dfs into a single one
 
 # Get country-level data
 l_diff_country <- lapply(l_diff, '[[', "df_cl_diff")
@@ -86,8 +83,6 @@ df_cl_diff$level <- c(rep(age_codes, rows))
 # I merge before multipltyig to make sure that the values that
 # I will multiply are the actual corret country-cohort-age combinatinos
 # as the dfs might be ordered strangely after moving them around so much
-
-# Note that diff_df is created in the previous script 4.3 (20190815) 
 
 abs_df <- merge(
   df_cl_diff

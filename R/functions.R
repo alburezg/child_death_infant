@@ -72,6 +72,7 @@ child_loss <- function(countries, reference_years, ages_keep = 15:100, max_child
     countries
     , worker_child_loss
     , reference_years = reference_years
+    # If F, runs for any-sex offspring
     , sex_keep = F
     , ages_keep = ages_keep
     , ASFRC
@@ -728,74 +729,148 @@ expand_LT_year_by_mx <- function(df_5_1, method = "linear", parallel = T, numCor
 # Implements Child or Infant Death equation to get the cumulative number of
 # children/infants who have died for a woman aged a
 
-expected_child_death_OLD <- function(ASFRSC, lx.kids.arr, xs, mas, cos, ages_keep = NA, max_child_age = NA) {
-  # browser()
-  # Child loss matrix
-  ECLC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
-  
-  # Child survival matrix
-  ECSC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
-  
-  # Get estimates
-  
-  for (co in cos){
-    # print(co)
-    for (ma in mas){
-      if(ma == 49) browser()
-      fert.vec <- c()
-      # Cohort ASFR up to a given age
-      fert.vec <- ASFRSC[ASFRSC$Cohort == co & ASFRSC$Age <= ma, "ASFR"]
-      # if(ma == 50) browser()
-      # This condition evalutes whether all are missing
-      probs <- lx.kids.arr[1:length(fert.vec),paste(ma),paste(co)]
-      condition <- sum(is.na(probs)) != length(probs)
-      
-      if (condition){	
-        # This is actually implementing Equation 1 in original paper
-        children_born <- sum(fert.vec, na.rm=TRUE)
-        
-        lx_indices <- 1:length(fert.vec)
-        # If infant mortality should be estimated
-        # instead of child mortality
-        # for infants, implement the condition:
-        # l_{(min(a-x, 5),c+x)}
-        
-        if(!is.na(max_child_age) & length(lx_indices) > max_child_age + 1) {
-          
-          # if(max(lx_indices) == 31) browser()
-          # print(ma)
-          names(lx_indices) <- ma - lx_indices - min(xs) + 1
-          # +1 addresses the indexing issue, since age 0 is index 1
-          # This names give the age of the child (a-x) in the equation
-          lx_indices[as.numeric(names(lx_indices)) > max_child_age] <- lx_indices[names(lx_indices) == max_child_age]
-        }
+# expected_child_death_OLD <- function(ASFRSC, lx.kids.arr, xs, mas, cos, ages_keep = NA, max_child_age = NA) {
+#   
+#   # Child loss matrix
+#   ECLC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
+#   
+#   # Child survival matrix
+#   ECSC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
+#   
+#   # Get estimates
+#   
+#   for (co in cos){
+#     for (ma in mas){
+#       fert.vec <- c()
+#       # Cohort ASFR up to a given age
+#       fert.vec <- ASFRSC[ASFRSC$Cohort == co & ASFRSC$Age <= ma, "ASFR"]
+#       
+#       # This condition evaluates whether all are missing
+#       probs <- lx.kids.arr[1:length(fert.vec),paste(ma),paste(co)]
+#       condition <- sum(is.na(probs)) != length(probs)
+#       
+#       if (condition){	
+#         # This is actually implementing Equation 1 in original paper
+#         children_born <- sum(fert.vec, na.rm=TRUE)
+#         
+#         lx_indices <- 1:length(fert.vec)
+#         # If infant mortality should be estimated
+#         # instead of child mortality
+#         # for infants, implement the condition:
+#         # l_{(min(a-x, 5),c+x)}
+#         
+#         if(!is.na(max_child_age) & length(lx_indices) > max_child_age + 1) {
+#           
+#           names(lx_indices) <- ma - lx_indices - min(xs) + 1
+#           # +1 addresses the indexing issue, since age 0 is index 1
+#           # This names give the age of the child (a-x) in the equation
+#           lx_indices[as.numeric(names(lx_indices)) > max_child_age] <- lx_indices[names(lx_indices) == max_child_age]
+#         }
+# 
+#         survival_probs <- lx.kids.arr[lx_indices, paste(ma), paste(co)]
+#         children_surviving <- sum(fert.vec * survival_probs, na.rm=TRUE)
+#         
+#         ECLC.mat.coh[paste(ma), paste(co)]<- children_born - children_surviving
+#         ECSC.mat.coh[paste(ma), paste(co)] <- children_surviving
+#       }
+#     }
+#   }
+#   
+#   list_out <- list(ECLC.mat.coh = ECLC.mat.coh, ECSC.mat.coh = ECSC.mat.coh)
+#   
+#   # Filter only relevant ages
+#   if(!all(is.na(ages_keep))) {
+#     
+#     list_out <- lapply(list_out, function(mat) {
+#       mat[rownames(mat) %in% ages_keep, ]
+#     })
+#     
+#   }
+#   
+#   return(list_out)
+#   
+# }
 
-        survival_probs <- lx.kids.arr[lx_indices, paste(ma), paste(co)]
-        children_surviving <- sum(fert.vec * survival_probs, na.rm=TRUE)
-        
-        ECLC.mat.coh[paste(ma), paste(co)]<- children_born - children_surviving
-        ECSC.mat.coh[paste(ma), paste(co)] <- children_surviving
-      }
-    }
-  }
-  
-  list_out <- list(ECLC.mat.coh = ECLC.mat.coh, ECSC.mat.coh = ECSC.mat.coh)
-  
-  # Filter only relevant ages
-  if(!all(is.na(ages_keep))) {
-    
-    list_out <- lapply(list_out, function(mat) {
-      mat[rownames(mat) %in% ages_keep, ]
-    })
-    
-  }
-  
-  return(list_out)
-  
-}
+# expected_child_death_OLD2 <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_keep = NA, max_child_age = NA) {
+#   # browser()
+#   # Child loss matrix
+#   ECLC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
+#   
+#   # Child survival matrix
+#   ECSC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
+#   
+#   # Get estimates
+#   
+#   for (co in cos){
+#     for (ma in mas){
+# 
+#       fert.vec <- c()
+#       # Cohort ASFR up to a given age
+#       fert.vec <- ASFRSC[ASFRSC$Cohort == co & ASFRSC$Age <= ma, "ASFR"]
+# 
+#       # This condition evalutes whether all are missing
+#       probs <- lx.kids.arr[1:length(fert.vec),paste(ma),paste(co)]
+#       condition <- sum(is.na(probs)) != length(probs)
+#       
+#       if (condition){	
+#         # This is actually implementing Equation 1 in original paper
+#         children_born <- sum(fert.vec, na.rm=TRUE)
+#         
+#         lx_indices <- 1:length(fert.vec)
+#         # If infant mortality should be estimated
+#         # instead of child mortality
+#         # for infants, implement the condition:
+#         # l_{(min(a-x, 5),c+x)}
+#         
+#         if(!is.na(max_child_age) & length(lx_indices) > max_child_age + 1) {
+#         
+#           names(lx_indices) <- ma - lx_indices - min(xs) + 1
+#           # +1 addresses the indexing issue, since age 0 is index 1
+#           # This names give the age of the child (a-x) in the equation
+#           
+#           under_5_mom_ages <- lx_indices[as.numeric(names(lx_indices)) <= max_child_age]
+#           
+#           survival_probs_under_5 <- lx.kids.arr[under_5_mom_ages, paste(ma), paste(co)]
+#           
+#           # Second, get new surv probs for the cases where the child's 
+#           # age x's is higher than k
+#           
+#           survival_probs_over_5 <- survival_probs_over_age(
+#             max_child_age
+#             , lx_indices
+#             , co
+#             , ma
+#             , lt_df
+#             )
+#           
+#           survival_probs <- c(survival_probs_over_5, survival_probs_under_5)
+#           
+#         } else{
+#           survival_probs <- lx.kids.arr[lx_indices, paste(ma), paste(co)]  
+#         }
+#         children_surviving <- sum(fert.vec * survival_probs, na.rm=TRUE)
+#         
+#         ECLC.mat.coh[paste(ma), paste(co)]<- children_born - children_surviving
+#         ECSC.mat.coh[paste(ma), paste(co)] <- children_surviving
+#       }
+#     }
+#     
+#   }
+#   
+#   list_out <- list(ECLC.mat.coh = ECLC.mat.coh, ECSC.mat.coh = ECSC.mat.coh)
+#   
+#   # Filter only relevant ages
+#   if(!all(is.na(ages_keep))) {
+#     list_out <- lapply(list_out, function(mat) {
+#       mat[rownames(mat) %in% ages_keep, ]
+#     })
+#   }
+#   
+#   return(list_out)
+#   
+# }
 
 expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_keep = NA, max_child_age = NA) {
-  # browser()
   # Child loss matrix
   ECLC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
   
@@ -803,16 +878,13 @@ expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_
   ECSC.mat.coh<-matrix(NA,length(mas), length(cos), dimnames=list(paste(mas), paste(cos)))
   
   # Get estimates
-  
   for (co in cos){
-    # print(co)
     for (ma in mas){
-      # print(ma)
-      # if(ma == 50) browser()
+      
       fert.vec <- c()
       # Cohort ASFR up to a given age
       fert.vec <- ASFRSC[ASFRSC$Cohort == co & ASFRSC$Age <= ma, "ASFR"]
-      # if(ma == 50) browser()
+      
       # This condition evalutes whether all are missing
       probs <- lx.kids.arr[1:length(fert.vec),paste(ma),paste(co)]
       condition <- sum(is.na(probs)) != length(probs)
@@ -828,49 +900,31 @@ expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_
         # l_{(min(a-x, 5),c+x)}
         
         if(!is.na(max_child_age) & length(lx_indices) > max_child_age + 1) {
-        
-          # if(max(lx_indices) == 31) browser()
           
           names(lx_indices) <- ma - lx_indices - min(xs) + 1
           # +1 addresses the indexing issue, since age 0 is index 1
           # This names give the age of the child (a-x) in the equation
           
-          under_5_mom_ages <- lx_indices[as.numeric(names(lx_indices)) <= max_child_age]
+          under_k_mom_ages <- lx_indices[as.numeric(names(lx_indices)) <= max_child_age]
           
-          survival_probs_under_5 <- lx.kids.arr[under_5_mom_ages, paste(ma), paste(co)]
+          survival_probs_under_k <- lx.kids.arr[under_k_mom_ages, paste(ma), paste(co)]
           
-          # Second, get new surv probs for the cases where the child's age x's is higher than 
-          # k
+          # Second, get new surv probs for the cases where the child's 
+          # age x's is higher than k
           
-          survival_probs_over_5 <- survival_probs_over_age(
+          survival_probs_over_k <- survival_probs_over_age(
             max_child_age
             , lx_indices
             , co
             , ma
             , lt_df
-            )
+          )
           
-          survival_probs <- c(survival_probs_over_5, survival_probs_under_5)
-          
-          # survival_probs_over_age <- function(max_child_age, lx_indices, co, country_keep, LTCB){
-          #   x_temp <- names(lx_indices[lx_indices > max_child_age])
-          #   co_temp <- co + as.numeric(x_temp) 
-          #   
-          #   out <- 
-          #     LTCB %>% 
-          #     filter(Country == country_keep) %>% 
-          #     filter(Age == 5) %>% 
-          #     filter(Cohort %in% co_temp) %>% 
-          #     pull(lx)
-          #   names(out) <- rev(co_temp)
-          #   out
-          # }
+          survival_probs <- c(survival_probs_over_k, survival_probs_under_k)
           
         } else{
           survival_probs <- lx.kids.arr[lx_indices, paste(ma), paste(co)]  
         }
-        
-        
         children_surviving <- sum(fert.vec * survival_probs, na.rm=TRUE)
         
         ECLC.mat.coh[paste(ma), paste(co)]<- children_born - children_surviving
@@ -884,17 +938,14 @@ expected_child_death <- function(ASFRSC, lt_df, lx.kids.arr, xs, mas, cos, ages_
   
   # Filter only relevant ages
   if(!all(is.na(ages_keep))) {
-    
     list_out <- lapply(list_out, function(mat) {
       mat[rownames(mat) %in% ages_keep, ]
     })
-    
   }
   
   return(list_out)
   
 }
-
 
 fix_un_countries <- function(x) {
   x <- gsub("\\.|\\?", "", x)
@@ -1045,7 +1096,8 @@ get_difference <- function(child_death_df, name_to_save = NA){
   
   names(val_list) <- paste0(names(val_list), ".")
   
-  # Add NA to the start of each series since I am not considering the prvious age (eg 24)
+  # Add NA to the start of each series since I am 
+  # not considering the prvious age (eg 24)
   # when getting the differences
   diff_l <- lapply(val_list, function(df) {
     df$diff <- c(diff(df$value, differences = 1), NA)
@@ -1068,10 +1120,17 @@ get_difference <- function(child_death_df, name_to_save = NA){
   quant_low <- 0.40
   quant_high <- 0.60
   
-  # Data.table alternative is preffered
+  # Data.table alternative is faster
   
   # Get summary measures
-  sum_diff <- data.table(df_cl_diff)[ , list(median = median(diff, na.rm = T), low_iqr = quantile(diff, quant_low, na.rm = T), high_iqr = quantile(diff, quant_high, na.rm = T)), by = list(region, age, cohort)]
+  sum_diff <- 
+    data.table(df_cl_diff)[ 
+      , list(median = median(diff, na.rm = T)
+      , low_iqr = quantile(diff, quant_low, na.rm = T)
+      , high_iqr = quantile(diff, quant_high, na.rm = T))
+      , by = list(region, age, cohort)
+      ]
+    # data.table(df_cl_diff)[ , list(median = median(diff, na.rm = T), low_iqr = quantile(diff, quant_low, na.rm = T), high_iqr = quantile(diff, quant_high, na.rm = T)), by = list(region, age, cohort)]
   
   sum_diff <- 
     sum_diff %>% 
@@ -1984,8 +2043,8 @@ worker_apply_lt <- function(con, countries, cohorts, female_births, LTCF) {
 }
 
 worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_keep, ASFRC,lt_df, max_child_age = NA, path) {
-  # browser()
-  # 2.1. Get LT for chosen years
+  
+  # 2.1. Get relevant array of survival probabilities
   
   lx_array_temp <- get_lx_array(
     country_keep = country_keep
@@ -2013,9 +2072,12 @@ worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_
   }
   
   # 2.4. Expected child loss and child survival
-  
+  # This is the function that actually does the heavy
+  # lifting of implementing the kin-cohort method
+  # to estimate child death. See , for more details:
+  # https://doi.org/10.31235/osf.io/s69fz
   estimates <- expected_child_death(
-    ASFR_df
+    ASFRSC = ASFR_df
     , lt_df
     , lx.kids.arr = lx_array_temp
     , xs
@@ -2025,8 +2087,8 @@ worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_
     , max_child_age = max_child_age
   )
   
+  # First element is child loss (second is child survival)
   ECLC.mat.coh <- estimates[[1]]
-  
   
   eclc <- as.data.frame(ECLC.mat.coh, stringsAsFactors = F)
   eclc$age <- as.numeric(rownames(eclc))
@@ -2038,7 +2100,6 @@ worker_child_loss <- function(country_keep, reference_years, sex_keep = F, ages_
       , value = as.numeric(value)
       , country = country_keep
     )
-  
 }
 
 worker_child_survival <- function(country_keep, reference_years, sex_keep = F, ages_keep, ASFRC,lt_df, path, max_child_age) {
@@ -2073,7 +2134,7 @@ worker_child_survival <- function(country_keep, reference_years, sex_keep = F, a
   # 2.4. Expected child loss and child survival
   
   estimates <- expected_child_death(
-    ASFR_df
+    ASFRSC = ASFR_df
     , lt_df = lt_df
     , lx.kids.arr = lx_array_temp
     , xs

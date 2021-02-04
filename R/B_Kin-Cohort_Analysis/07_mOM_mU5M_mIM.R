@@ -7,7 +7,8 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Theory:
-# From ESG:
+# Explanation of the logic of this analysis
+# (from Emily SG):
 
 # Here what we're doing is just treating bereavement 
 # as a once ever outcome. So, we want the proportion 
@@ -20,11 +21,11 @@
 
 # Implementation:
 
-# Now, going back to the measure of prevalence, I tried a similar procedure to 
+# I tried a similar procedure to 
 # estimate the proportion of mothers (per 1,000 mothers) who have ever lost one 
 # or more children. For this, I created cohort ‘life tables’ for women, where 
-# nqx was the First Difference of Child Death (ΔCD in our paper, Emilio). Emily, 
-# this is basically the number of child deaths experienced by a woman at each age. 
+# nqx was the First Difference of Child Death (ΔCD in our paper, Emilio). 
+# This is basically the number of child deaths experienced by a woman at each age. 
 # The resulting lx column can be interpreted as the share of women who have 
 # experienced child death at age x. I then re-scaled this by multiplying it both 
 # by the share of women surviving to age x (the ‘regular’ lx column in the mortality 
@@ -36,9 +37,8 @@
 # First, reduce size of data, then get period values
 
 # ESG uses the agr groups 20-44 and 45-49
-# 	For time frame: 2010-2019
+# -	For time frame: 2010-2019
 
-# years <- 2010:2019
 # Not sure about longest possible time-frame, but function won't
 # break if years are unavaillable, only will return
 # NA for those years. THis seems to work, although 1970 is unavailable
@@ -47,7 +47,18 @@ years <- 2000:2020
 breaks <- c(20, 45, 50)
 reprod_age <- c(15,50)
 
+# How do you want to get estimates for grouped ages?
+# The KC method gives single-age values of the prevalence 
+# of maternal bereavement for each measure. Based on this, 
+# I grouped the values by age groups (eg 20-44 or 30-35). 
+# When I did this I chose the mid-interval value as 
+# representing the value for the whole interval. Therefore, 
+# the mIM value for the 20-44 ages was the value 
+# at age 20+(44-20)/2 = 32. 
 method <- "mid-interval"
+
+# The 'mean' method just gets the mean of all values in the
+# age range
 # method <- "mean"
 
 # 1. mOM ~~~~ ----

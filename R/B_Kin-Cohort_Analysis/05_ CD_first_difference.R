@@ -2,22 +2,19 @@ print(paste0("Running script: 6 - CD_first_difference"))
 
 # Obtain country-level estimates of the first difference of Child Death. 
 # This is the number of child deaths experienced by a woman at each age 'a'.
-# See the main text and the SI Appendix for a formal description.
+# See the SI Appendix for a formal description.
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Data requirements: 
-# df_cl_m_full <- readRDS('../../Data/estimates/df_cl_m_1950to1999_15to100.RDS')
-# The dataset with CD for all offsrping, infants under 1 and U5:
-# df_cl_m_full <- readRDS('../../Data/estimates/CD_01_04_0100.RDS')
-# Individual ones: 
+# Data requirements (created in previous script): 
 CD_0_100 <- readRDS('../../Data/estimates/CD_0_100.RDS') 
 CD_0_5 <- readRDS('../../Data/estimates/CD_0_5.RDS') 
 CD_0_1 <- readRDS('../../Data/estimates/CD_0_1.RDS') 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # The following scripts save the RDS files automatically
-# and return them as a list
+# to the disk and return them as a list
 
+# To identify whether all-age child deaths, child, or infant
 age_codes <- c("0_100", "0_5", "0_1")
 
 # 1. All offspring ----
