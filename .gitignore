@@ -11,7 +11,7 @@ Data/derived/LTCB.csv
 Data/derived/wpp_female_births_1_1.csv
 Data/derived/wpp_all_births_1_1.csv
 # All the lx.matrix files
-Data/derived/*.RDS
+#Data/derived/*.RDS
 #UNWPP raw data
 #Data/wpp_data
 Data/wpp_data/__archive
