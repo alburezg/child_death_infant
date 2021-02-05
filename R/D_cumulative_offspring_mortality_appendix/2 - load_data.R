@@ -100,13 +100,13 @@ surv_ci <- haven::read_dta("../../Data/emily/globalmaternalestimates.dta")
 
 # 6. Estimates from previous scripts 
 
-mOM <- read.csv("../../Data/estimates/mOM_5y.csv", stringsAsFactors = F) %>% 
+mOM_5y <- read.csv("../../Data/estimates/mOM_5y.csv", stringsAsFactors = F) %>% 
   filter(country != "channel islands")
   
-mU5M <- read.csv("../../Data/estimates/mU5m_5y.csv", stringsAsFactors = F) %>% 
+mU5M_5y <- read.csv("../../Data/estimates/mU5m_5y.csv", stringsAsFactors = F) %>% 
   filter(country != "channel islands")
 
-mIM <- read.csv("../../Data/estimates/mIM_5y.csv", stringsAsFactors = F) %>% 
+mIM_5y <- read.csv("../../Data/estimates/mIM_5y.csv", stringsAsFactors = F) %>% 
   filter(country != "channel islands")
 
 # 7. From GGS

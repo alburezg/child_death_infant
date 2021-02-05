@@ -2336,7 +2336,7 @@ compare_measures_bulk_5y <- function(measure, export, regions,  surv_df, name_ex
       measure_temp <- gsub("[0-9]+", "", surv_measure_keep_all_n[n])
       
       indicator_df <- get(
-        switch(measure_temp, mom = "mOM", mim = "mIM", mum = "mU5M")
+        paste0(switch(measure_temp, mom = "mOM", mim = "mIM", mum = "mU5M"), "_5y")
       )
       
       compare_measures_5y(

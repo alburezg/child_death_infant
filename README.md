@@ -1,21 +1,19 @@
-# Overview
+Replication code and data to produce the *Kin-Cohort* estimates included in the paper:
 
-Code and data to produce the **Kin-Cohort** estimates included in the paper:
-
-*The Global Burden of Maternal Bereavement: Indicators of the Cumulative Prevalence of Child Loss*.
+*The Global Burden of Maternal Bereavement: Indicators of the Cumulative Prevalence of Child Loss* by Emily Smith-Greenway, Diego Alburez-Gutierrez, Jenny Trinitapoli, and Emilio Zagheni.
 
 The estimation procedures are described in the Appendix of the paper. 
 
-**Prepared by Diego Alburez, Feb 2021**
+*Prepared by Diego Alburez, Feb 2021*
 
 ## Replicating the analysis
 
 I recommend that you save the entire content of this repository locally (extracting the files if needed). Please make sure to keep the folder structure after extracting! This is needed because the scripts use relative paths to locate data and save function outputs. 
 Note that some empty directories have a `temp` file, which you can safely ignore. 
 
-- All code is in the directory `R`
+- All code is in the directory `R`. Please run the scripts sequentially (e.g., A->B->C)
 - All input data in the directory `Data`
-- All output is saved in the directory `Output` 
+- All the results of the anlaysis are saved in the directory `Output`
 
 ## Software information
 

@@ -109,6 +109,17 @@ mU5M <- read.csv("../../Data/estimates/mU5m.csv", stringsAsFactors = F) %>%
 mIM <- read.csv("../../Data/estimates/mIM.csv", stringsAsFactors = F) %>% 
   filter(country != "channel islands")
 
+# Estimates using 5-y age groups
+
+mOM_5y <- read.csv("../../Data/estimates/mOM_5y.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
+
+mU5M_5y <- read.csv("../../Data/estimates/mU5m_5y.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
+
+mIM_5y <- read.csv("../../Data/estimates/mIM_5y.csv", stringsAsFactors = F) %>% 
+  filter(country != "channel islands")
+
 # 7. From GGS
 
 surv_ggs <- read.csv("../../Data/GGS/ggs_estimates.csv", stringsAsFactors = F)

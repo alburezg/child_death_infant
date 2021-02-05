@@ -43,11 +43,11 @@ source(files[4])
 # 5 - difference_model_survey_percent ====
 
 source(files[5])
-
-# 6. Check childlesness ====
-
-source(files[6])
-
-# 7. Correlations plots ====
-
-source(files[7])
+# 
+# # 6. Check childlesness ====
+# 
+# source(files[6])
+# 
+# # 7. Correlations plots ====
+# 
+# source(files[7])
