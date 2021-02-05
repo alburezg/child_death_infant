@@ -8,20 +8,19 @@
 # unless stated otherwise.    #
 # Last edited 20210210        #
 # GNU GENERAL PUBLIC LICENSE  #
-# Version 3, 29 June 2007     #
 # *~^**~^**~^**~^**~^**~^**~^*#
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Code to produce estimates of the prevalence of offspring death
-# by children age at death (mOM, mIM, mU5M) for the paper
+# by children's age at death (mOM, mIM, mU5M) for the paper
 # The Global Burden of Maternal Bereavement:
 # Indicators of the Cumulative Prevalence of Child Loss
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(files <- list.files(pattern = ".R$", path = "R")[-1])
+(files <- list.files(pattern = ".R$", path = "R", full.names = T)[-1])
 
 # 1. Load the functions and packages needed in the scripts ====
 

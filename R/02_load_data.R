@@ -5,27 +5,54 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Files needed (these should be in Data/):
 
-# - Files in /wpp_data/ are the original WPP data without 
+# - Files in Data/wpp_data/ are the original WPP data without 
 # any previous formatting they were all downloaded from 
 # https://population.un.org/wpp/Download/Standard/CSV/
 
-# wpp_data/","WPP2019_Period_Indicators_Medium.csv
-# wpp_data/WPP2019_TotalPopulationBySex.csv
-# wpp_data/WPP2019_PopulationByAgeSex_Medium.csv
+# - Files in /derived/ come from a previously published paper:
+# Alburez-Gutierrez, D., M. Kolk, and E. Zagheni. (2021) Women's experience of child death: a global demographic perspective. Demography. DOI:10.31235/osf.io/s69fz
+# Estimation is outlined in that paper's supplementary material: https://osf.io/jdvhw/
 
-# - Files in /derived/ were created in the "A - Data formatting" cycle
-# derived/ASFRC.csv
-# derived/LTCF.csv
-# derived/LTCB.csv
-# derived/wpp_female_births_1_1.csv
-# derived/wpp_all_births_1_1.csv
+# Files in Data/emily were provided by Emily Smith-Greenaway and are, mainly
+# survey-based estimates of the prevalence of maternal bereavement
 
+# Full list of datasets needed for the anlaysis:
+
+data_needs <- c(
+  "Data/wpp_data/WPP2019_Period_Indicators_Medium.csv"
+  , "Data/derived/ASFRC.csv"
+  , "Data/derived/LTCF.csv"
+  , "Data/derived/LTCB.csv"
+  , "Data/derived/wpp_female_births_1_1.csv"
+  , "Data/derived/wpp_all_births_1_1.csv"
+  , "Data/wpp_data/WPP2019_TotalPopulationBySex.csv"
+  , "Data/wpp_data/WPP2019_PopulationByAgeSex_Medium.csv"
+  , "Data/wpp_data/un_regions.csv"
+  , "Data/emily/regions.csv"
+  , "Data/emily/20200214_women.csv"
+  , "Data/emily/20200214_women.csv"
+  , "Data/emily/20200214_mothers_indirect.csv"
+)
+missing <- !file.exists(data_needs)
 # The full list of all lx.kids.arr_{country} combinations should also be 
-# in the /derived folder. They are sourced by the get_lx_array() function
+# in the Data/derived folder. They are sourced by the get_lx_array() function
 # later on
+# This is a lot of data, sorry!
 
-# This one was downloaded from the WPP website and edited by hand for ease of use:
-# wpp_data/un_regions.csv 
+lx_files <- length(list.files('data/derived', pattern = "lx.kids.arr"))
+
+# Check if they all exist: 
+
+if(any(missing)) {
+  stop(paste0("These datasets are missing: ", data_needs[missing]))
+} else{
+  if(lx_files < 209) {
+    stop(paste0("I was expecting 209 lx.kids.arr_ files, but only found ", lx_files))
+  } else {
+    print("All datasets I need are available, well done! I'll start loading them now...")  
+  }
+}
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 0. Read wpp data 
@@ -33,7 +60,7 @@
 # csv version. including with different indicators for the medium scenario
 
 wpp_period_med <- read.csv(
-  file = paste0("Data/wpp_data/","WPP2019_Period_Indicators_Medium.csv")
+  file = "Data/wpp_data/WPP2019_Period_Indicators_Medium.csv"
   , stringsAsFactors = F
   ) %>% 
   mutate(
@@ -64,7 +91,7 @@ fert_wpp_per <- wpp_period_med %>%
 
 # , derived from WPP data in previous script
 
-ASFRC <- read.csv(file = paste0("Data/derived/","ASFRC.csv"), stringsAsFactors = F)
+ASFRC <- read.csv(file = "Data/derived/ASFRC.csv", stringsAsFactors = F)
 
 # Mean age at childbirth (MAC)
 
@@ -80,10 +107,10 @@ mac_wpp_per <- wpp_period_med %>%
 # Cohort life tables ====
 
 # Female
-LTCF <- data.table::fread(file = paste0("Data/derived/","LTCF.csv"), stringsAsFactors = F) %>% 
+LTCF <- data.table::fread(file = "Data/derived/LTCF.csv", stringsAsFactors = F) %>% 
   data.frame
 # Both sex
-LTCB <- data.table::fread(file = paste0("Data/derived/","LTCB.csv"), stringsAsFactors = F) %>% 
+LTCB <- data.table::fread(file = "Data/derived/LTCB.csv", stringsAsFactors = F) %>% 
   data.frame
 
 # 3. Birth cohort size ----
@@ -91,12 +118,12 @@ LTCB <- data.table::fread(file = paste0("Data/derived/","LTCB.csv"), stringsAsFa
 # 3.1. Female birth cohorts ====
 
 female_births <- read.csv(
-  file = paste0("Data/derived/","wpp_female_births_1_1.csv")
+  file = "Data/derived/wpp_female_births_1_1.csv"
   , stringsAsFactors = F
   )
 
 all_births <- read.csv(
-  file = paste0("Data/derived/","wpp_all_births_1_1.csv")
+  file = "Data/derived/wpp_all_births_1_1.csv"
   , stringsAsFactors = F
 )
 
@@ -144,8 +171,10 @@ world_pop_age <-
 
 # 5. UN regions ====
 
-un_regions <- read.csv(file = paste0("Data/wpp_data/","un_regions.csv"), stringsAsFactors = F)
-regions <- read.csv(file = paste0("Data/emily/regions.csv"), stringsAsFactors = F)
+# This one was downloaded from the WPP website and edited by hand for ease of use:
+# wpp_data/un_regions.csv 
+un_regions <- read.csv(file = "Data/wpp_data/un_regions.csv", stringsAsFactors = F)
+regions <- read.csv(file = "Data/emily/regions.csv", stringsAsFactors = F)
 
 # 6. Survey estimates ----
 
@@ -159,7 +188,7 @@ surv <-
   bind_rows(
     read.csv("Data/emily/20200214_women.csv", stringsAsFactors = F) %>% 
       mutate(measure = "women")
-    , read.csv("Data/emily/20200214_mothers.csv", stringsAsFactors = F) %>% 
+    , read.csv("Data/emily/20200214_women.csv", stringsAsFactors = F) %>% 
       mutate(measure = "mothers")
     # If indirect estimates showuld be included, unomment this line
     , read.csv("Data/emily/20200214_mothers_indirect.csv", stringsAsFactors = F) %>% 
@@ -170,7 +199,7 @@ surv <-
   data.frame()
 
 
-print("UN data loaded (ungrouped)")
+print("All data loaded!")
 print(Sys.time())
 #*********************************
 

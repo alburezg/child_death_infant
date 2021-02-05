@@ -24,7 +24,9 @@ l_diff <- readRDS("Data/estimates/l_diff.RDS")
 # birth cohort-country cobminations
 # This takes a long time to run, so it's easier just to load
 # it from the start. However, you can still estimate again below
-lx_df <- read.csv("Data/estimates/lx_df.csv", stringsAsFactors = F)
+if(file.exists("Data/estimates/lx_df.csv")){
+  lx_df <- read.csv("Data/estimates/lx_df.csv", stringsAsFactors = F)
+}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 1. Absolute child loss by age ----

@@ -41,47 +41,9 @@ years <- 2000:2020
 breaks <- c(20, 45, 50)
 reprod_age <- c(15,50)
 
-
-# How do you want to get estimates for grouped ages?
-# 20210205: PREFERED CHOICE: "mean"
-
-# METHOD 1:
 # The 'mean' method just gets the mean of all values in the
 # age range
 method <- "mean"
-
-# Method 2:
-# The KC method gives single-age values of the prevalence 
-# of maternal bereavement for each measure. Based on this, 
-# I grouped the values by age groups (eg 20-44 or 30-35). 
-# When I did this I chose the mid-interval value as 
-# representing the value for the whole interval. Therefore, 
-# the mIM value for the 20-44 ages was the value 
-# at age 20+(44-20)/2 = 32. 
-# method <- "mid-interval"
-
-# RATIONALE FOR PREFERRING ONE METHOD OVER THE OTHER:
-# So, this is the deal. Using mean estimates produces 
-# higher estimates than "mid-interva" method. Eg, looking 
-# at the mean absolute difference across both estimation 
-# methods (rcode 5lkjgoi):
-#   |region                | [20,45)| [45,50)|
-#   |:---------------------|-------:|-------:|
-#   |Africa                |    16.7|     6.0|
-#   |Arab states           |    21.3|    14.0|
-#   |Asia & Pacific        |    16.1|    10.1|
-#   |Europe                |     4.9|     4.0|
-#   |North America         |     2.4|     2.4|
-#   |South & Latin America |    14.5|    11.3|
-
-# Speculative interpretation:
-# In practice, the difference between the two estimates 
-# comes from the fact that "mean" produces higher values 
-# in regions where there is a steeper increase in the prevalence
-# of maternal bereavement over age. Eg in regions like Africa 
-# where the prevalence is already high for young maternal ages, 
-# this changes  is smaller that in LATAM, where it increases 
-# more over age.
 
 # 1. mOM ~~~~ ----
 

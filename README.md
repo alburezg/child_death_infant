@@ -11,7 +11,7 @@ The estimation procedures are described in the Appendix of the paper.
 I recommend that you save the entire content of this repository locally (extracting the files if needed). Please make sure to keep the folder structure after extracting! This is needed because the scripts use relative paths to locate data and save function outputs. 
 Note that some empty directories have a `temp` file, which you can safely ignore. 
 
-- All code is in the directory `R`. Please run the scripts sequentially (e.g., A->B->C)
+- All code is in the directory `R`. Please run the scripts sequentially
 - All input data in the directory `Data`
 - All the results of the anlaysis are saved in the directory `Output`
 

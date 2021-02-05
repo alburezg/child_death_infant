@@ -8,6 +8,7 @@ Data/derived/*.RDS
 Data/wpp_data
 Data/estimates/bereavement_life_tables.csv
 Data/GGS
+Data/hfd
 # For presentation
 presentation/
 #other materials, including full functions
