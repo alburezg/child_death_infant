@@ -8,8 +8,6 @@ Data/derived/__archive
 Data/derived/ASFRC.csv
 Data/derived/LTCF.csv
 Data/derived/LTCB.csv
-Data/derived/wpp_female_births_1_1.csv
-Data/derived/wpp_all_births_1_1.csv
 # All the lx.matrix files
 #Data/derived/*.RDS
 #UNWPP raw data

@@ -50,7 +50,7 @@ lx_files <- length(list.files('data/derived', pattern = "lx.kids.arr"))
 # Check if they all exist: 
 
 if(any(missing)) {
-  stop(paste0("These datasets are missing: ", data_needs[missing]))
+  stop(paste0("These datasets are missing: ", paste(data_needs[missing], collapse = "; ")))
 } else{
   if(lx_files < 209) {
     stop(paste0("I was expecting 209 lx.kids.arr_ files, but only found ", lx_files))
