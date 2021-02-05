@@ -3,18 +3,25 @@
 .RData
 .Ruserdata
 # Folders with large datasets
-Data/derived/*.csv
+Data/derived/__archive
+
+Data/derived/ASFRC.csv
+Data/derived/LTCF.csv
+Data/derived/LTCB.csv
+Data/derived/wpp_female_births_1_1.csv
+Data/derived/wpp_all_births_1_1.csv
+# All the lx.matrix files
 Data/derived/*.RDS
-Data/wpp_data
-Data/estimates/bereavement_life_tables.csv
+#UNWPP raw data
+#Data/wpp_data
+Data/wpp_data/__archive
+#Data/wpp_data/*.xlsx
+# All outputs from scripts in this repository
+Data/estimates/__archive
+Data/estimates/*.RDS
+Data/estimates/*.csv
+# Other datasets
 Data/GGS
 Data/hfd
-# For presentation
-presentation/
 #other materials, including full functions
-Other/
-#experimental
-R/E_Experimental
-admin
-paper
 Other
