@@ -66,7 +66,7 @@ change_period_labels <- function(col) {
   plyr::mapvalues(col, from = per_old, to = per_new)  
 }
 
-child_loss <- function(countries, reference_years, ages_keep = 15:100, max_child_age = NA, path = "Data/derived", ASFRC,LTCB) {
+child_loss <- function(countries, reference_years, ages_keep = 15:100, max_child_age = NA, path = "../../Data/derived", ASFRC,LTCB) {
   
   df_l <- lapply(
     countries
@@ -85,7 +85,7 @@ child_loss <- function(countries, reference_years, ages_keep = 15:100, max_child
   
 }
 
-child_survival <- function(countries, reference_years, ages_keep = 15:100, max_child_age = NA, path = "Data/derived", ASFRC,LTCB) {
+child_survival <- function(countries, reference_years, ages_keep = 15:100, max_child_age = NA, path = "../../Data/derived", ASFRC,LTCB) {
   
   df_l <- lapply(
     countries
@@ -429,7 +429,7 @@ compare_measures_bulk <- function(measure, export, regions, add_indirect_estimat
     # prev_wide <- prev_wide[match(countries_order, prev_wide$country), ] %>% 
     #   na.omit()
     
-    file_name <- paste0("Output/_kin_cohort_estimates_",measure , name_export, ".csv")
+    file_name <- paste0("../../Output/_kin_cohort_estimates_",measure , name_export, ".csv")
     
     write.csv(prev_wide, file_name, row.names = F)
     print(paste("Saved:", file_name))
@@ -1140,8 +1140,8 @@ get_difference <- function(child_death_df, name_to_save = NA){
   if(!is.na(name_to_save)) {
     paste("Saving to disk...")
     
-    saveRDS(sum_diff, file = paste0("Data/estimates/sum_diff_",name_to_save,".RDS"))
-    saveRDS(df_cl_diff, file = paste0("Data/estimates/df_cl_diff_",name_to_save,".RDS"))
+    saveRDS(sum_diff, file = paste0("../../Data/estimates/sum_diff_",name_to_save,".RDS"))
+    saveRDS(df_cl_diff, file = paste0("../../Data/estimates/df_cl_diff_",name_to_save,".RDS"))
   }
   
   
@@ -1152,7 +1152,7 @@ get_difference <- function(child_death_df, name_to_save = NA){
   
 }
 
-get_lx_array <- function(country_keep, reference_years, sex_keep, path = "Data/derived"){
+get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../Data/derived"){
   print(country_keep)
   
   file <- paste0(paste0(path, "/lx.kids.arr_", country_keep, ".RDS"))
@@ -1373,7 +1373,7 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   
   
   # 5. Export df 
-  if(!is.na(file_name)) write.csv(output, paste0("Output/",file_name,".csv"), row.names = F)
+  if(!is.na(file_name)) write.csv(output, paste0("../../Output/",file_name,".csv"), row.names = F)
   
   return(output)  
   
@@ -1935,7 +1935,7 @@ if(add_indirect_estimates){
     
     nam <- paste0(unique(df$level), ifelse(is.na(export_name), "", paste0("_", export_name)) )
     
-    p_name <- paste0("Output/",nam,"_comparative.pdf")
+    p_name <- paste0("../../Output/",nam,"_comparative.pdf")
     
     ggsave(
       p_name
@@ -2310,7 +2310,7 @@ worker_survival_probs <- function(life_table, xs, mas, cos) {
   nombre <- paste0("lx.kids.arr_", pais)
   # assign(x = nombre, value = lx.kids.arr)
   
-  file <- paste0("Data/derived/", nombre, ".RDS")
+  file <- paste0("../../Data/derived/", nombre, ".RDS")
   
   saveRDS(object = lx.kids.arr, file = file)
   print(paste(file, "saved"))
@@ -2374,7 +2374,7 @@ compare_measures_bulk_5y <- function(measure, export, regions,  surv_df, name_ex
     select(country, everything()) %>% 
     arrange(country)
   
-  file_name <- paste0("Output/_kin_cohort_estimates_",measure , "_",name_export, ".csv")
+  file_name <- paste0("../../Output/_kin_cohort_estimates_",measure , "_",name_export, ".csv")
   
   write.csv(prevalence, file_name, row.names = F)
   print(paste("Saved:", file_name))
