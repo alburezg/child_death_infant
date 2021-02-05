@@ -1,8 +1,0 @@
-1_append and generate data file.do (application/x-stata-syntax) 69842 bytes.
-2_gen_mIMestimates.do (application/x-stata-syntax) 7740 bytes.
-3_gen_mU5Mestimates.do (application/x-stata-syntax) 7619 bytes.
-4_gen_mOM_estimates.do (application/x-stata-syntax) 3836 bytes.
-5_gen_mIM1519_estimates.do (application/x-stata-syntax) 3006 bytes.
-6_gen_mOMregion_estimates.do (application/x-stata-syntax) 1454 bytes.
-7_gen_mOMbywealth_estimates.do (application/x-stata-syntax) 4029 bytes.
-8_gen_sensitivity analysis.do (application/x-stata-syntax) 7920 bytes.
