@@ -13,6 +13,12 @@
 # Alburez-Gutierrez, D., M. Kolk, and E. Zagheni. (2021) Women's experience of child death: a global demographic perspective. Demography. DOI:10.31235/osf.io/s69fz
 # Estimation is outlined in that paper's supplementary material: https://osf.io/jdvhw/
 
+# These three files are too large for GitHub, but they are available 
+# in the Harvard database:
+# Data/derived/ASFRC.csv
+# Data/derived/LTCF.csv
+# Data/derived/LTCB.csv
+
 # Files in Data/emily were provided by Emily Smith-Greenaway and are, mainly
 # survey-based estimates of the prevalence of maternal bereavement
 
