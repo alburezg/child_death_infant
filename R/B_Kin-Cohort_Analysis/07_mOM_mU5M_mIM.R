@@ -33,12 +33,6 @@
 
 # 0. Unchanging paramenters ----
 
-# For cohort-period conversion
-# First, reduce size of data, then get period values
-
-# ESG uses the agr groups 20-44 and 45-49
-# -	For time frame: 2010-2019
-
 # Not sure about longest possible time-frame, but function won't
 # break if years are unavaillable, only will return
 # NA for those years. THis seems to work, although 1970 is unavailable
@@ -47,7 +41,16 @@ years <- 2000:2020
 breaks <- c(20, 45, 50)
 reprod_age <- c(15,50)
 
+
 # How do you want to get estimates for grouped ages?
+# 20210205: PREFERED CHOICE: "mean"
+
+# METHOD 1:
+# The 'mean' method just gets the mean of all values in the
+# age range
+method <- "mean"
+
+# Method 2:
 # The KC method gives single-age values of the prevalence 
 # of maternal bereavement for each measure. Based on this, 
 # I grouped the values by age groups (eg 20-44 or 30-35). 
@@ -55,11 +58,30 @@ reprod_age <- c(15,50)
 # representing the value for the whole interval. Therefore, 
 # the mIM value for the 20-44 ages was the value 
 # at age 20+(44-20)/2 = 32. 
-method <- "mid-interval"
+# method <- "mid-interval"
 
-# The 'mean' method just gets the mean of all values in the
-# age range
-# method <- "mean"
+# RATIONALE FOR PREFERRING ONE METHOD OVER THE OTHER:
+# So, this is the deal. Using mean estimates produces 
+# higher estimates than "mid-interva" method. Eg, looking 
+# at the mean absolute difference across both estimation 
+# methods (rcode 5lkjgoi):
+#   |region                | [20,45)| [45,50)|
+#   |:---------------------|-------:|-------:|
+#   |Africa                |    16.7|     6.0|
+#   |Arab states           |    21.3|    14.0|
+#   |Asia & Pacific        |    16.1|    10.1|
+#   |Europe                |     4.9|     4.0|
+#   |North America         |     2.4|     2.4|
+#   |South & Latin America |    14.5|    11.3|
+
+# Speculative interpretation:
+# In practice, the difference between the two estimates 
+# comes from the fact that "mean" produces higher values 
+# in regions where there is a steeper increase in the prevalence
+# of maternal bereavement over age. Eg in regions like Africa 
+# where the prevalence is already high for young maternal ages, 
+# this changes  is smaller that in LATAM, where it increases 
+# more over age.
 
 # 1. mOM ~~~~ ----
 
@@ -113,23 +135,3 @@ write.csv(mU5M, "../../Data/estimates/mU5M.csv", row.names = F)
 write.csv(mIM, "../../Data/estimates/mIM.csv", row.names = F)
 
 print("7 - mOM, mU5M, and mIM saved as csv files!")
-
-# 5. Export for Emily 
-
-# model_all <- bind_cols(
-#   mim20ic = mIM %>% 
-#     filter(agegr == "[20,45)") %>% 
-#     select(iso, year, bereaved_mothers)
-#   , mim45ic = mIM %>% 
-#     filter(agegr == "[45,50)") %>% 
-#     pull(bereaved_mothers)
-#   , mum20ic = mU5M %>% 
-#     filter(agegr == "[20,45)") %>% 
-#     pull(bereaved_mothers)
-#   , mum45ic = mU5M %>% 
-#     filter(agegr == "[45,50)") %>% 
-#     pull(bereaved_mothers)
-#   , mom45ic = mOM %>% 
-#     filter(agegr == "[45,50)") %>% 
-#     pull(bereaved_mothers)
-# )

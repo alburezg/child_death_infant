@@ -145,6 +145,8 @@ world_pop_age <-
 # 5. UN regions ====
 
 un_regions <- read.csv(file = paste0("../../Data/wpp_data/","un_regions.csv"), stringsAsFactors = F)
+regions <- read.csv(file = paste0("../../Data/emily/regions.csv"), stringsAsFactors = F)
+
 
 print("UN data loaded (ungrouped)")
 print(Sys.time())

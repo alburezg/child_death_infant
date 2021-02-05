@@ -17,15 +17,7 @@
 #                ||      ||
 
 
-
-
-if(!require("stringr")) {
-  install.packages("stringr")
-  library(stringr)
-} 
-
 files <- list.files(pattern = ".R$")[-1]
-( files <- stringr::str_sort(files, numeric = TRUE) )
 
 # 1. Load the functions and packages needed in the scripts ====
 
@@ -40,6 +32,11 @@ source(files[2])
 source(files[3])
 
 # 4.  difference_model_survey_absolute 2016 for all ====
+# This fixes all the KC estimates to the values 
+# observed in 2016.
+
+# The scripts below are just used to compare the KC 
+# to the survey estimates
 
 source(files[4])
 

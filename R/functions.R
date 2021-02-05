@@ -1165,7 +1165,7 @@ get_lx_array <- function(country_keep, reference_years, sex_keep, path = "../../
 # Comments inside explai nmore and see paper
 offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, breaks = c(20, 45, 50), reprod_age = c(15,50), abs_df_all, ASFRC, LTCF, method = "mid-interval"){
   
-  # 1. From women to mothers
+  # 1. Convert from women to mothers ~~~~~~~
   
   # Theory:
   
@@ -1173,11 +1173,11 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   # then we could rescale. Say that 90% of women 44-49 have had at 
   # least a child. Then each *mother* has lost X/90 children.
   
-  # If we do not have the fraction of women aged 44-49 who are mothers, 
-  # we could calculate it from age specific fertility rates. We can 
+  # But we do not have the fraction of women aged 44-49 who are mothers.
+  # We could calculate it from age specific fertility rates. We can 
   # consider the fertility rates as “hazard rates” and evaluate how many 
   # women have “survived” having children by the time they are 44-49 if 
-  # the go through the given age specific fertility rates at each age. 
+  # they experience the given age specific fertility rates at each age. 
   # 1-(fraction of survivors) would be the fraction of “ever been mothers”.
   
   # Creates fertility tables assuming that
@@ -1194,7 +1194,7 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
     group_by(cohort, country) %>% 
     mutate(
       # Create probability of exiting poulation of 
-      # childless women asnqx = 1 - e^(-h*n)
+      # childless women as nqx = 1 - e^(-h*n)
       # From the paper:
       # To estimate an equivalent measure for mothers, we rescale our estimates 
       # using a similar life table approach. We consider fertility as a “hazard rate” to 
@@ -1210,11 +1210,6 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
     ungroup %>% 
     select(-lx)
   
-  # ~~~~~~~~~~~~~~~~~~~
-  # Note tha abs_df_all has higher values in new commit at all ages for level “0_100”
-  # compared to last working commit!!
-  # ~~~~~~~~~~~~~~~~~~~
-  
   cd_mothers <- merge(
     abs_df_all %>% 
       filter(level == k_value) %>% 
@@ -1224,14 +1219,14 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   ) %>% 
     select(- absolute)
   
-  # 2. Implement equations 2-4 from paper
+  # 2. Get proportion of bereaved mothers ~~~~~~~
   
-  # Create multplie decrement life tables where 
+  # Create child death life tables where 
   # qx_OD is the probability of experiencig child death
   # at age x, so that lx gives the share of women or mothers who have 
   # experienced the death of a child by age a
   # qx_mother_death is the probability for a woman to die in that age group
-  # taken from the cohort life tables of the UN
+  # taken from the cohort life tables of the UN (a regular surival probability)
   
   # First, get mother qx values from LTC
   
@@ -1247,12 +1242,10 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
     group_by(cohort, country) %>% 
     mutate(
       # Create lx with radix 1 for year 15
-      # Note: sould this be 
       lx_scaled = lx / first(lx)
       # This pertains to women who have lost one child or more
       # Note that the estimate is weighted by the share of women 
-      # survivng to that age group and then by 1000 since ESG
-      # estimates require it
+      # survivng to that age group and then by 1000
       # Create probability of experiencing child death as
       # nqx = 1 - e^(-h*n)
       # From the paper: 
@@ -1276,16 +1269,14 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
       # Or on average, each woman has lost X/100 children.
       # but only x/(100*share_of_women_are_mothers) mothers
       # have experienced child death.
-      # Eq 4 in paper mOM_((a,c))^k= wOM_((a,c))^k* FM_((a,c,) )
+      # Eq. in paper: mOM_((a,c))^k= wOM_((a,c))^k* FM_((a,c,) )
       , bereaved_mothers = bereaved_women / share_of_women_are_mothers
     ) %>% 
     ungroup
   
-  # write.csv(cd_table_mult, "../../Data/estimates/bereavement_life_tables.csv", row.names = F)
-  
-  # Depcreacted! 20200214 after extensive comparissons between commits
-  # in Github
-  # Multiple decrement table, created too high estimates
+  # Depcreacted alternative approach: Create multiple decrement
+  # lifetables: created too high estimates 
+  # 20200214 
   # cd_table_mult <- 
   #   cd_mothers_qx %>% 
   #   group_by(cohort, country) %>% 
@@ -1308,7 +1299,7 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   #   ) %>% 
   #   ungroup
   
-  # 3. Cohort to Period 
+  # 3. Cohort to Period ~~~~~~~~~~~~~~
   
   # We approximate period values from cohort estimates
   # by taking values on the diagonal
@@ -1329,8 +1320,13 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
   new <- countrycode(old, origin = "country.name", "iso3c", warn = F)
   
   # rcode sldf44t
+  # Chose how to group single-age estimates into
+  # grouped age intervals. There are two approaches: one 
+  # uses the mid-age interval (eg., 32 for the 30-34 age group)
+  # and another uses the mean value. 
+  # For a comparisson of both approaches, see rcode 5lkjgoi
+  # Preferred approach is "mean"
   print(paste("Warning: using this method to group values by ages:", method))
-  
   
   if(method == "mean"){
     output <-
@@ -1360,25 +1356,22 @@ offspring_death_prevalence <- function(k_value, file_name, years = 2010:2019, br
       ungroup %>%
       mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>%
       select(iso, everything())
+  } else if(method == "median"){
+    output <-
+      cd_p %>%
+      mutate( agegr = cut(age, breaks, right = F)  ) %>%
+      filter(!is.na(agegr)) %>%
+      group_by(country, year, agegr) %>%
+      summarise(
+        # Option 1, take mean
+        bereaved_women = median(bereaved_women)
+        , bereaved_mothers = median(bereaved_mothers)
+      ) %>%
+      ungroup %>%
+      mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>%
+      select(iso, everything())
   }
   
-  # OLD CODE (alwasy taking mid-interval)
-  # output <- 
-  #   cd_p %>% 
-  #   mutate( agegr = cut(age, breaks, right = F)  ) %>% 
-  #   filter(!is.na(agegr)) %>% 
-  #   group_by(country, year, agegr) %>% 
-  #   summarise(
-  #     # Option 1, take mean
-  #     # bereaved_women = mean(bereaved_women)
-  #     # , bereaved_mothers = mean(bereaved_mothers)
-  #     # Option 2, take mid-interval value
-  #     bereaved_women = nth(bereaved_women, n = floor(n()/2))
-  #     , bereaved_mothers = nth(bereaved_mothers, n = floor(n()/2))
-  #   ) %>% 
-  #   ungroup %>% 
-  #   mutate(iso = plyr::mapvalues(country, from =  old, to = new)) %>% 
-  #   select(iso, everything())
   
   # 5. Export df 
   if(!is.na(file_name)) write.csv(output, paste0("../../Output/",file_name,".csv"), row.names = F)
