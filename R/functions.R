@@ -5,15 +5,19 @@
 # gatemonte@gmail.com         #
 # @d_alburez                  #
 # unless stated otherwise.    #
-# Last edited 20200110        #
+# Last edited 20210212        #
 # GNU GENERAL PUBLIC LICENSE  #
 # Version 3, 29 June 2007     #
 # *~^**~^**~^**~^**~^**~^**~^*#
 #        \   ^__^ 
 #        \  (oo)\ ________ 
 #           (__)\         )\ /\ 
-#                ||------w|
+#                ||-------|
 #                ||      ||
+
+
+# Some of the functions in this script might not be needed for these estimates
+# sorry!
 
 
 # Apply cohort life tables to real-life populatinos
@@ -102,8 +106,6 @@ child_survival <- function(countries, reference_years, ages_keep = 15:100, max_c
   data.frame(rbindlist(df_l, use.names = T))
   
 }
-
-
 
 # Takes survey estimates from Emily and estimates from our models
 # and produces a dataframe where both are shown side-by-side. 
@@ -2526,5 +2528,3 @@ compare_measures_5y <- function(year_for_missing_countries = 2016, surv_measure_
   return(joint_survey_out)
   
 }
-
-

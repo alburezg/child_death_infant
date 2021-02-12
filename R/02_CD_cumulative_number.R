@@ -24,7 +24,6 @@ allowed_types <- c("country", "un_sdg-groups")
 
 # Parameters for the function
 cos <- c(1950:2100) # cohorts
-# cos <- c(1950:2099) # cohorts
 xs <- c(15:50) # reproductive ages
 
 # 1. Offspring Death (0-100) ----
@@ -120,7 +119,6 @@ od_cd_id <- merge(
 ) %>%
   rename(cohort = variable) %>% 
   # take last observed value for ages over 54
-  # group_by(country, cohort, age) %>% 
   fill(id)
 
 saveRDS(od_cd_id, 'Data/estimates/CD_01_05_0100.RDS')

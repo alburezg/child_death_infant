@@ -9,7 +9,11 @@
 # Last edited 20210210        #
 # GNU GENERAL PUBLIC LICENSE  #
 # *~^**~^**~^**~^**~^**~^**~^*#
-
+#        \   ^__^ 
+#        \  (oo)\ ________ 
+#           (__)\         )\ /\ 
+#                ||-------|
+#                ||      ||
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -22,63 +26,51 @@
 
 (files <- list.files(pattern = ".R$", path = "R", full.names = T)[-1])
 
-# 1. Load the functions and packages needed in the scripts ====
+# 1. Load the functions and ata needed in the scripts ====
+
+# This script makes sure that all data I need for the analysis 
+# are available in the Data/ directory. If they are not, the larger
+# files need to be downloaded manually. See insctruction in error message.
 
 source(files[1])
 
-# 2. Load the data needed for the analysis ====
+# 2. Estimate the cumulative number of child deaths for a woman reaching age a (CD) ====
+
+# This script takes cohort age-specific fertility rates (ASFRC) 
+# and matrices of survival probabilities (lx.kids.arr) to 
+# estimates the cumulative number of child deaths for a woman 
+# surviving to different ages
 
 source(files[2])
 
-# 3. Load data about country grouping and format them for the analysis ==== 
-
-source(files[3])
-
-# A. Child Death ----
-
-# 4. Estimate the cumulative number of child deaths for a woman reaching age a (CD) ====
-
-# This script takes cohort age-specific fertility rates (ASFRC) 
-# and matrices of survival probabilities (lx.kids.arr) to implement 
-# equation 1 in the main text for all countries and birth cohorts separately. 
-# It produces estimates of the cumulative number of child deaths for a woman 
-# surviving to different ages. 
-
-source(files[4])
-
-# 5. Regional estimates of CD  ====
-
-# Use the country-level estimates produced by the previous script to estimate
-# the levels of child death at a regional level. Regions are UN SDG regions.
-# Median and different percentiles are estimated.
-
-source(files[5])
-
-# 6. First difference of Child Death (Delta CD) ====
+# 3. First difference of Child Death (Delta CD) ====
 
 # Obtain country-level estimates of the first difference of Child Death. 
 # This is the number of child deaths experienced by a woman at each age 'a'.
-# See the main text (Fig.3) and the SI Appendix for a formal description.
+
+source(files[3])
+
+# 4. Get the burden of child death ========
+
+# This is the estimated number of child deaths (in thousands or equivalent)
+# experienced by all women in a given country-cohort combination
+
+source(files[4])
+
+# 5. Get estimates for mOM, mU5M, mIM for wide age groups ==== 
+
+source(files[5])
+
+# 6. Get estimates for mOM, mU5M, mIM for 5-y age groups ==== 
 
 source(files[6])
 
-# 7. Get estimates for mOM, mU5M, mIM ==== 
+# 7. Get formated results for paper at the country level (wide age groups) ===========
 
 source(files[7])
 
-# 8. Get estimates for mOM, mU5M, mIM by 5-year age groups ==== 
+# 8. Get formated results for paper at the country level (5-y age groups) ===========
 
 source(files[8])
 
-# 9. Compare to survey data and export table ===========
-# First, using only 2 super wide age-groups 
-# This is the one reported in the main text
-
-source(files[9])
-
-# 10. Compare to survey data and export table ===========
-# using 5-year age groups (appendix)
-
-source(files[10])
-
-print("A'qaroq! Estimates complete.")
+print("Estimates complete.")

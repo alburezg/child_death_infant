@@ -1,6 +1,10 @@
-#!/usr/bin/env Rscript
 
-#*********************************
+source("R/functions.R")
+
+# Data wrangling
+wrangling <- c("tidyverse", "data.table","reshape2", 'parallel', 'countrycode')
+
+library2(wrangling)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Files needed (these should be in Data/):
@@ -13,8 +17,7 @@
 # Alburez-Gutierrez, D., M. Kolk, and E. Zagheni. (2021) Women's experience of child death: a global demographic perspective. Demography. DOI:10.31235/osf.io/s69fz
 # Estimation is outlined in that paper's supplementary material: https://osf.io/jdvhw/
 
-# These three files are too large for GitHub, but they are available 
-# in the Harvard database:
+# These three files are too large for GitHub, but they are can be downloaded from the Harvard dataverse:
 # Data/derived/ASFRC.csv
 # Data/derived/LTCF.csv
 # Data/derived/LTCB.csv
@@ -50,7 +53,12 @@ lx_files <- length(list.files('data/derived', pattern = "lx.kids.arr"))
 # Check if they all exist: 
 
 if(any(missing)) {
-  stop(paste0("These datasets are missing: ", paste(data_needs[missing], collapse = "; ")))
+  stop(paste0(
+    "These datasets are missing: "
+    , paste(data_needs[missing], collapse = "; ")
+    , ". See instructions in script for link to download them by hand. "
+    , "make sure that they are saved in the Data/ directory!"
+    ) )
 } else{
   if(lx_files < 209) {
     stop(paste0("I was expecting 209 lx.kids.arr_ files, but only found ", lx_files))
@@ -68,7 +76,7 @@ if(any(missing)) {
 wpp_period_med <- read.csv(
   file = "Data/wpp_data/WPP2019_Period_Indicators_Medium.csv"
   , stringsAsFactors = F
-  ) %>% 
+) %>% 
   mutate(
     region = tolower(Location)
     , region = fix_un_countries(region)
@@ -91,7 +99,7 @@ fert_wpp_per <- wpp_period_med %>%
     , TFR
     , CBR
     , births = Births
-    )
+  )
 
 # Cohort ASFR ====
 
@@ -126,7 +134,7 @@ LTCB <- data.table::fread(file = "Data/derived/LTCB.csv", stringsAsFactors = F) 
 female_births <- read.csv(
   file = "Data/derived/wpp_female_births_1_1.csv"
   , stringsAsFactors = F
-  )
+)
 
 all_births <- read.csv(
   file = "Data/derived/wpp_all_births_1_1.csv"
@@ -168,12 +176,12 @@ world_pop_age <-
     , pop_m = PopMale
     , pop_f = PopFemale
     , pop_all = PopTotal
-    ) %>% 
+  ) %>% 
   mutate_at(c('pop_m', 'pop_f', "pop_all"), function(col) col*1000) %>% 
   mutate(
     country = tolower(country)
     , country = fix_un_countries(country)
-    )
+  )
 
 # 5. UN regions ====
 
@@ -181,6 +189,42 @@ world_pop_age <-
 # wpp_data/un_regions.csv 
 un_regions <- read.csv(file = "Data/wpp_data/un_regions.csv", stringsAsFactors = F)
 regions <- read.csv(file = "Data/emily/regions.csv", stringsAsFactors = F)
+
+# Decide how countries will be groupped in the analysis
+# On 20191010, we had decided to group all countries by UN SDG region 
+
+un_reg <- un_regions %>% 
+  # fix text formatting
+  mutate_all(.funs = fix_un_countries) %>% 
+  # Chose which regions should be used as default
+  # Very important as this will shape the final analysis
+  # [PREFERRED 20190814]: Use UN SDG regions but remove UAS/NZ and Ocenia (other)
+  mutate(default_region = un_sdg_groups)
+
+# Define labels for using in plots later on
+
+regions_long <- c(
+  "sub-saharan africa"
+  , "northern africa and western asia"
+  , "central and southern asia"
+  , "eastern and south-eastern asia"
+  , "latin america and the caribbean"
+  , "australia_new zealand"
+  , "oceania (excluding australia and new zealand)"
+  , "europe and northern america"
+)
+
+regions_short <- c(
+  # "SS Africa"
+  "Sub-Sah Africa"
+  , "N Africa & W Asia"
+  , "C & S Asia"
+  , "E & SE Asia"
+  , "LATAM & Caribbean"
+  , "AUS & NZ"
+  , "Oceania (other)"
+  , "Europe & N America"
+)
 
 # 6. Survey estimates ----
 
@@ -208,4 +252,3 @@ surv <-
 print("All data loaded!")
 print(Sys.time())
 #*********************************
-

@@ -24,7 +24,6 @@ l_all <- get_difference(
   , name_to_save = age_codes[1]
 )
 
-
 # 2. Under 5 ----
 
 l_u5 <- get_difference(
@@ -43,8 +42,6 @@ l_infant <- get_difference(
 
 l_diff <- list(l_all, l_u5, l_infant)
 
-# l_diff_country <- lapply(l_diff, '[[', "df_cl_diff")
-
-# 4. Export
+# 5. Export
 
 saveRDS(l_diff, file = "Data/estimates/l_diff.RDS")

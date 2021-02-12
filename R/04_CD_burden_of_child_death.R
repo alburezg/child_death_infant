@@ -18,7 +18,8 @@ print(paste0("Running script: ", "7 - CD_asbolute_by_ex"))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Data requirements:
 # First difference of child death:
-l_diff <- readRDS("Data/estimates/l_diff.RDS")
+# l_diff <- readRDS("Data/estimates/l_diff.RDS")
+   
 # Objects created in this script: 
 # lx_df is a df with the number of women surviving up to age 100 for specific
 # birth cohort-country cobminations
@@ -34,7 +35,7 @@ if(file.exists("Data/estimates/lx_df.csv")){
 # 1.1. Radix by birth cohort (denominator) ====
 
 # This cannot be obtained from the WPP, which only has period 
-# poulations estimates
+# populations estimates
 # Therefore, I need to apply the specific female cohort life table for the
 # respective population of women by birth cohort and country/region
 
@@ -43,7 +44,7 @@ if(file.exists("Data/estimates/lx_df.csv")){
 # This can be obtained from the WPP estimates of the yearly number of births
 
 # The function below applies (pssuedo) cohort life tables to real-life populatinos
-# with the intention of gettin the lx column
+# with the intention of getting the lx column
 # where radices are the initial size of birth cohorts 
 # of women using wpp data
 
@@ -52,7 +53,7 @@ if(file.exists("Data/estimates/lx_df.csv")){
 # Put differently, it is the number of woman at risk of losing a child
 # ie the denominator for the absolute measure of child loss
 
-# This takes around 10min to run parallelised on 10 cores
+# This takes around 10min to run if parallelised 
 
 if(!exists("lx_df")) {
   
@@ -105,10 +106,6 @@ abs_df <- merge(
 
 # Now it is possible to group the data and get summary
 # statistics if this is wanted
-# Note that for this measure, we do not estimate percentiles, as 
-# it is ultimately the sum of the estimates from a deterministic model
-# We do, however, keep the lx column as this will be used later on, in the results section
-# to visualise the heterogeneity within each region.
 
 sum_abs <-
   abs_df %>%

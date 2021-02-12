@@ -7,7 +7,6 @@
 # Data requirements: 
 # Data created in previous script can be loaded as:
 # abs_df <- readRDS("Data/estimates/abs_df_all.RDS")
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # 0. Unchanging paramenters ----
@@ -16,7 +15,6 @@ years <- 2000:2020
 breaks <- seq(15, 50, 5)
 reprod_age <- c(15,50)
 
-# method <- "mid-interval"
 method <- "mean"
 
 # 1. mOM ~~~~ ----

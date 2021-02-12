@@ -24,7 +24,7 @@
 # I tried a similar procedure to 
 # estimate the proportion of mothers (per 1,000 mothers) who have ever lost one 
 # or more children. For this, I created cohort ‘life tables’ for women, where 
-# nqx was the First Difference of Child Death (ΔCD in our paper, Emilio). 
+# nqx was the First Difference of Child Death. 
 # This is basically the number of child deaths experienced by a woman at each age. 
 # The resulting lx column can be interpreted as the share of women who have 
 # experienced child death at age x. I then re-scaled this by multiplying it both 
@@ -43,6 +43,8 @@ reprod_age <- c(15,50)
 
 # The 'mean' method just gets the mean of all values in the
 # age range
+# initially, I took the "mid-interval" value but in Feb 2021
+# we decided to change this to the mean
 method <- "mean"
 
 # 1. mOM ~~~~ ----

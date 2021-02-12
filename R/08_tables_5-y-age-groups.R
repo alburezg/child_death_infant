@@ -50,9 +50,6 @@ new_df <-
     , `mum45-49kc_old` = mum45kc 
     , `mom45-49kc_old` = mom45kc 
   ) %>% 
-  # ~~ Fixme! #########
-# Remove small countries. This should be done 
-# earlier but I don't remember where
 filter(!is.na(`mim20-44kc_old`))
 
 write.csv(new_df, "Output/_kin_cohort_estimates_mothers_appendix_all.csv", row.names = F)
