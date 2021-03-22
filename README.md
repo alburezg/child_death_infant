@@ -6,8 +6,6 @@ Smith-Greenaway, E., Alburez-Gutierrez, D., Trinitapoli, J., and E. Zagheni. (20
 
 The estimation procedures are described in the Appendix of the paper. 
 
-**The scripts are also available from GitHub, where any further development will be uploaded:** [https://github.com/alburezg/child_death_infant](https://github.com/alburezg/child_death_infant)
-
 *Code by Diego Alburez, Feb 2021*
 
 ## Replicating the analysis
