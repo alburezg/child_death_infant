@@ -14,7 +14,8 @@ library2(wrangling)
 # https://population.un.org/wpp/Download/Standard/CSV/
 
 # - Files in /derived/ come from a previously published paper:
-# Alburez-Gutierrez, D., M. Kolk, and E. Zagheni. (2021) Women's experience of child death: a global demographic perspective. Demography. DOI:10.31235/osf.io/s69fz
+# Alburez-Gutierrez, D., M. Kolk, and E. Zagheni. (Forthcoming) Women's experience of child death: a global demographic perspective. 
+# Demography. DOI:10.31235/osf.io/s69fz
 # Estimation is outlined in that paper's supplementary material: https://osf.io/jdvhw/
 
 # These three files are too large for GitHub, but they are can be downloaded from the Harvard dataverse:
@@ -29,14 +30,14 @@ library2(wrangling)
 
 data_needs <- c(
   "Data/wpp_data/WPP2019_Period_Indicators_Medium.csv"
+  , "Data/wpp_data/WPP2019_TotalPopulationBySex.csv"
+  , "Data/wpp_data/WPP2019_PopulationByAgeSex_Medium.csv"
+  , "Data/wpp_data/un_regions.csv"
   , "Data/derived/ASFRC.csv"
   , "Data/derived/LTCF.csv"
   , "Data/derived/LTCB.csv"
   , "Data/derived/wpp_female_births_1_1.csv"
   , "Data/derived/wpp_all_births_1_1.csv"
-  , "Data/wpp_data/WPP2019_TotalPopulationBySex.csv"
-  , "Data/wpp_data/WPP2019_PopulationByAgeSex_Medium.csv"
-  , "Data/wpp_data/un_regions.csv"
   , "Data/emily/regions.csv"
   , "Data/emily/20200214_women.csv"
   , "Data/emily/20200214_women.csv"

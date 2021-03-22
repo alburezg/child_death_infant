@@ -2,9 +2,11 @@
 
 Replication code and data to estimate the prevalence of offspring, child, and infant bereavement using the *Kin-Cohort* method for the paper:
 
-*The Global Burden of Maternal Bereavement: Indicators of the Cumulative Prevalence of Child Loss* by Emily Smith-Greenaway, Diego Alburez-Gutierrez, Jenny Trinitapoli, and Emilio Zagheni.
+Smith-Greenaway, E., Alburez-Gutierrez, D., Trinitapoli, J., and E. Zagheni. (2021). *The Global Burden of Maternal Bereavement: Indicators of the Cumulative Prevalence of Child Loss*. BMJ Global Health. 
 
 The estimation procedures are described in the Appendix of the paper. 
+
+**The scripts are also available from GitHub, where any further development will be uploaded:** [https://github.com/alburezg/child_death_infant](https://github.com/alburezg/child_death_infant)
 
 *Code by Diego Alburez, Feb 2021*
 

@@ -26,11 +26,11 @@
 
 (files <- list.files(pattern = ".R$", path = "R", full.names = T)[-1])
 
-# 1. Load the functions and ata needed in the scripts ====
+# 1. Load the functions and data needed in the scripts ====
 
 # This script makes sure that all data I need for the analysis 
 # are available in the Data/ directory. If they are not, the larger
-# files need to be downloaded manually. See insctruction in error message.
+# files need to be downloaded manually. See instruction in error message.
 
 source(files[1])
 
